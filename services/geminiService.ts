@@ -2,10 +2,15 @@
 import { GoogleGenAI } from "@google/genai";
 import { UserInput, PredictionResult, PropertyType, Source } from "../types";
 
-// Initialize the client
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export const predictPrice = async (input: UserInput): Promise<PredictionResult> => {
+  // Initialize client strictly inside the function to prevent crash on app load
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    throw new Error("API Key is missing. Please check your Netlify configuration.");
+  }
+  
+  const ai = new GoogleGenAI({ apiKey });
+
   const isPlot = input.type === PropertyType.PLOT;
   
   // Construct features string
@@ -191,3 +196,4 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     throw new Error("Failed to fetch prediction.");
   }
 };
+
