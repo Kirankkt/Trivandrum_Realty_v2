@@ -22,7 +22,7 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
   const prompt = `
     Act as a senior Real Estate Investment Analyst & Surveyor for Trivandrum (Thiruvananthapuram).
     
-    Your Task: Determine Market Value, NRI Suitability, and GEOSPATIAL CONTEXT for the asset.
+    Your Task: Determine Market Value, NRI Suitability, and DEEP GEOSPATIAL CLUSTERING.
     
     INPUT DATA:
     - Type: ${input.type}
@@ -75,11 +75,14 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
       - TRUE if Plot >= 4 cents AND Road != "Narrow".
       - FALSE otherwise.
 
-    STEP 6: GEOSPATIAL INTELLIGENCE
-    - Analyze Terrain: Is ${input.locality} hilly/elevated (like Kudappanakunnu) or coastal flatland (like Veli)?
+    STEP 6: GEOSPATIAL CLUSTERING (NEW)
+    - Analyze Terrain: Is ${input.locality} hilly/elevated or coastal flatland?
     - Analyze Vibe: Pure Residential, Commercial Mix, or Developing?
-    - Analyze Price Gradient: e.g., "Prices higher near Main Road, lower inside."
-    - List 2-3 Growth Drivers (e.g., "Upcoming Metro", "Highway Expansion").
+    - Analyze Price Gradient: e.g., "Prices higher near Main Road."
+    - Identify 2-3 "Micro-Markets" inside ${input.locality} (e.g. "Near Junction: High Price", "Interior: Budget").
+    - Generate "Market Depth" data: Create 12 simulated comparable listings for a Scatter Plot.
+         - Vary sizes slightly around ${input.plotArea} cents.
+         - Vary prices based on "Premium", "Mid-Range", "Budget" clusters typical for this area.
 
     RETURN JSON ONLY:
     {
@@ -116,7 +119,13 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
          "terrain": "string (e.g. Elevated/Hilly)",
          "neighborhoodVibe": "string",
          "priceGradient": "string",
-         "growthDrivers": ["string", "string"]
+         "growthDrivers": ["string", "string"],
+         "microMarkets": [
+            { "name": "string", "priceLevel": "High/Med/Low", "description": "string" }
+         ],
+         "marketDepth": [
+            { "id": 1, "size": number, "price": number, "type": "Premium" }
+         ]
       }
     }
   `;
@@ -127,8 +136,8 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }],
-        temperature: 0, // ZERO randomness
-        seed: 42, // Fixed seed for deterministic outputs
+        temperature: 0.1, // Slight creativity for data generation
+        seed: 42, 
         topK: 1,
       },
     });
@@ -196,4 +205,5 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     throw new Error("Failed to fetch prediction.");
   }
 };
+
 
