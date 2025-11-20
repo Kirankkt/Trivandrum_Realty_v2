@@ -45,11 +45,20 @@ export interface NriMetrics {
   villaFeasibilityReason: string;
 }
 
+export interface Comparable {
+  id: number;
+  size: number; // Cents or Sqft
+  price: number; // In Lakhs
+  type: 'Premium' | 'Mid-Range' | 'Budget';
+}
+
 export interface GeospatialAnalysis {
   terrain: string; // e.g., "Elevated / Hilly", "Coastal Flatland"
   neighborhoodVibe: string; // e.g., "Quiet Residential", "Commercial Hub"
   priceGradient: string; // e.g., "Prices higher towards Kowdiar axis"
   growthDrivers: string[]; // List of nearby developments
+  microMarkets: { name: string; priceLevel: string; description: string }[]; // e.g. "Golf Links Rd: High"
+  marketDepth: Comparable[]; // Simulated comparable properties for clustering chart
 }
 
 export interface PredictionResult {
@@ -71,3 +80,4 @@ export interface ChartData {
   name: string;
   price: number;
 }
+
