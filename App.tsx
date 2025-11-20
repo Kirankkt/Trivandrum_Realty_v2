@@ -5,6 +5,7 @@ import PropertyForm from './components/PropertyForm';
 import PriceDisplay from './components/PriceDisplay';
 import InvestmentDashboard from './components/InvestmentDashboard';
 import GeospatialView from './components/GeospatialView';
+import NriView from './components/NriView';
 import { UserInput, PredictionResult } from './types';
 import { predictPrice } from './services/geminiService';
 
@@ -12,18 +13,20 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PredictionResult | null>(null);
   const [currentInput, setCurrentInput] = useState<UserInput | null>(null);
+  const [activeTab, setActiveTab] = useState<'valuation' | 'nri' | 'geo'>('valuation');
 
   const handlePrediction = async (input: UserInput) => {
     setLoading(true);
-    setResult(null); // Clear previous result
+    setResult(null);
     setCurrentInput(input);
+    // Reset to valuation tab on new search
+    setActiveTab('valuation');
     
     try {
       const prediction = await predictPrice(input);
       setResult(prediction);
     } catch (error: any) {
       console.error(error);
-      // Show the specific error message from geminiService (e.g., "API Key is missing")
       const errorMessage = error.message || "There was an issue fetching the market data.";
       alert(`Error: ${errorMessage}\n\nPlease check your API Key configuration in Netlify.`);
     } finally {
@@ -39,32 +42,18 @@ const App: React.FC = () => {
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
-          {/* Left Column: Form */}
+          {/* Left Column: Form (Always Visible) */}
           <div className="lg:col-span-4 space-y-6">
-            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r mb-4">
-                <div className="flex">
-                    <div className="flex-shrink-0">
-                        <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                        </svg>
-                    </div>
-                    <div className="ml-3">
-                        <p className="text-sm text-blue-700">
-                            Enter details below. The AI agent will browse live Google listings for Trivandrum to give you an accurate estimate.
-                        </p>
-                    </div>
-                </div>
-            </div>
             <PropertyForm onSubmit={handlePrediction} isLoading={loading} />
           </div>
 
-          {/* Right Column: Results */}
+          {/* Right Column: Results & Tabs */}
           <div className="lg:col-span-8 space-y-6">
+            
             {loading && (
               <div className="h-96 flex flex-col items-center justify-center bg-white rounded-xl shadow-sm border border-dashed border-gray-300 animate-pulse">
                  <div className="w-16 h-16 border-4 border-teal-200 border-t-teal-600 rounded-full animate-spin mb-4"></div>
-                 <p className="text-gray-500 font-medium">Consulting Real Estate Databases...</p>
-                 <p className="text-xs text-gray-400 mt-2">Searching for {currentInput?.locality} trends</p>
+                 <p className="text-gray-500 font-medium">Analyzing Market Data...</p>
               </div>
             )}
 
@@ -77,19 +66,54 @@ const App: React.FC = () => {
 
             {!loading && result && (
               <>
-                <PriceDisplay result={result} />
-                <InvestmentDashboard 
-                    result={result} 
-                    localityName={currentInput?.locality || 'Selected Area'}
-                />
-                <GeospatialView 
-                    result={result}
-                    locality={currentInput?.locality || ''}
-                />
+                {/* Navigation Tabs */}
+                <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg mb-4">
+                    <button 
+                        onClick={() => setActiveTab('valuation')}
+                        className={`flex-1 py-2.5 text-sm font-medium rounded-md transition-all ${activeTab === 'valuation' ? 'bg-white text-teal-700 shadow' : 'text-gray-500 hover:text-gray-700'}`}
+                    >
+                        Valuation
+                    </button>
+                    <button 
+                        onClick={() => setActiveTab('nri')}
+                        className={`flex-1 py-2.5 text-sm font-medium rounded-md transition-all ${activeTab === 'nri' ? 'bg-white text-teal-700 shadow' : 'text-gray-500 hover:text-gray-700'}`}
+                    >
+                        NRI Insights
+                    </button>
+                    <button 
+                        onClick={() => setActiveTab('geo')}
+                        className={`flex-1 py-2.5 text-sm font-medium rounded-md transition-all ${activeTab === 'geo' ? 'bg-white text-teal-700 shadow' : 'text-gray-500 hover:text-gray-700'}`}
+                    >
+                        Geospatial
+                    </button>
+                </div>
+
+                {/* Tab Content */}
+                <div className="min-h-[500px]">
+                    {activeTab === 'valuation' && (
+                        <>
+                            <PriceDisplay result={result} />
+                            <InvestmentDashboard 
+                                result={result} 
+                                localityName={currentInput?.locality || 'Selected Area'}
+                            />
+                        </>
+                    )}
+                    
+                    {activeTab === 'nri' && (
+                        <NriView result={result} />
+                    )}
+
+                    {activeTab === 'geo' && (
+                        <GeospatialView 
+                            result={result} 
+                            locality={currentInput?.locality || ''} 
+                        />
+                    )}
+                </div>
               </>
             )}
           </div>
-          
         </div>
       </main>
 
@@ -101,4 +125,5 @@ const App: React.FC = () => {
 };
 
 export default App;
+
 
