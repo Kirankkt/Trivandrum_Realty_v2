@@ -21,9 +21,11 @@ const App: React.FC = () => {
     try {
       const prediction = await predictPrice(input);
       setResult(prediction);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("There was an issue fetching the market data. Please ensure your API Key is valid and try again.");
+      // Show the specific error message from geminiService (e.g., "API Key is missing")
+      const errorMessage = error.message || "There was an issue fetching the market data.";
+      alert(`Error: ${errorMessage}\n\nPlease check your API Key configuration in Netlify.`);
     } finally {
       setLoading(false);
     }
@@ -99,3 +101,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+
