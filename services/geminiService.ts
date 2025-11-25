@@ -64,18 +64,22 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     STEP 5: DEVELOPER & NRI INSIGHTS
     - Estimate Distance to Trivandrum International Airport (TRV).
     - Estimate Distance to Lulu Mall Trivandrum.
+    - **The Mom Test (Social Infra)**:
+      - Identify the nearest **International/Reputed School** (e.g. TRIS, Loyola, St. Thomas) to ${input.locality}. Return Name and Est. Distance.
+      - Identify the nearest **Major Hospital** (e.g. KIMS, Medical College, Ananthapuri) to ${input.locality}. Return Name and Est. Distance.
     - Calculate NRI Suitability Score (0-10):
       - Base 5.
       - +2 if Airport < 8km.
       - +2 if Beach < 2km OR Locality is "Kowdiar"/"Sasthamangalam".
       - +1 if Mall < 6km.
+      - +1 if School or Hospital < 5km.
       - -2 if Road Width is "Narrow".
       - Max is 10.
     - Villa Feasibility:
       - TRUE if Plot >= 4 cents AND Road != "Narrow".
       - FALSE otherwise.
 
-    STEP 6: GEOSPATIAL CLUSTERING (NEW)
+    STEP 6: GEOSPATIAL CLUSTERING
     - Analyze Terrain: Is ${input.locality} hilly/elevated or coastal flatland?
     - Analyze Vibe: Pure Residential, Commercial Mix, or Developing?
     - Analyze Price Gradient: e.g., "Prices higher near Main Road."
@@ -113,7 +117,11 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
          "airportDist": number,
          "mallDist": number,
          "isVillaFeasible": boolean,
-         "villaFeasibilityReason": "string"
+         "villaFeasibilityReason": "string",
+         "socialInfra": {
+            "nearestSchool": { "name": "string", "distance": number },
+            "nearestHospital": { "name": "string", "distance": number }
+         }
       },
       "geoSpatial": {
          "terrain": "string (e.g. Elevated/Hilly)",
@@ -182,7 +190,17 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
         airportDist: Number(data.nriMetrics.airportDist || 0),
         mallDist: Number(data.nriMetrics.mallDist || 0),
         isVillaFeasible: Boolean(data.nriMetrics.isVillaFeasible),
-        villaFeasibilityReason: String(data.nriMetrics.villaFeasibilityReason || "")
+        villaFeasibilityReason: String(data.nriMetrics.villaFeasibilityReason || ""),
+        socialInfra: data.nriMetrics.socialInfra ? {
+            nearestSchool: {
+                name: String(data.nriMetrics.socialInfra.nearestSchool?.name || "N/A"),
+                distance: Number(data.nriMetrics.socialInfra.nearestSchool?.distance || 0)
+            },
+            nearestHospital: {
+                name: String(data.nriMetrics.socialInfra.nearestHospital?.name || "N/A"),
+                distance: Number(data.nriMetrics.socialInfra.nearestHospital?.distance || 0)
+            }
+        } : undefined
     } : undefined;
 
     return {
@@ -205,5 +223,3 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     throw new Error("Failed to fetch prediction.");
   }
 };
-
-
