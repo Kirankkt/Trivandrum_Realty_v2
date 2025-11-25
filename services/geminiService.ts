@@ -1,6 +1,45 @@
 import { GoogleGenAI } from "@google/genai";
 import { UserInput, PredictionResult, PropertyType, Source } from "../types";
+// Fetch real sources using Serper API
+const fetchRealSources = async (locality: string): Promise<Source[]> => {
+  const serperApiKey = process.env.SERPER_API_KEY;
+  if (!serperApiKey) {
+    console.warn("Serper API Key is missing. Sources will not be available.");
+    return [];
+  }
+  try {
+    const query = `Land price per cent in ${locality} Trivandrum 2024 2025`;
+    const response = await fetch('https://google.serper.dev/search', {
+      method: 'POST',
+      headers: {
+        'X-API-KEY': serperApiKey,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ q: query, num: 5 })
+    });
+    if (!response.ok) {
+      console.error('Serper API error:', response.statusText);
+      return [];
+    }
+    const data = await response.json();
+    const sources: Source[] = [];
+    // Extract organic results
+    if (data.organic && Array.isArray(data.organic)) {
+      data.organic.slice(0, 5).forEach((result: any) => {
+        if (result.link && result.title) {
+          sources.push({ title: result.title, uri: result.link });
+        }
+      });
+    }
+    return sources;
+  } catch (error) {
+    console.error('Error fetching sources from Serper:', error);
+    return [];
+  }
+};
 export const predictPrice = async (input: UserInput): Promise<PredictionResult> => {
+  // Fetch real sources first
+  const sources = await fetchRealSources(input.locality);
   // Initialize client strictly inside the function to prevent crash on app load
   const apiKey = process.env.API_KEY;
   if (!apiKey) {
@@ -84,7 +123,6 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
       "currency": "INR",
       "explanation": "Short textual summary.",
       "recommendation": "One sentence advice.",
-      "sources": [ { "title": "string", "uri": "string" } ], // LIST SPECIFIC URLS USED
       "estimatedLandValue": number, // IN LAKHS
       "estimatedStructureValue": number, // IN LAKHS
       "breakdown": {
@@ -148,24 +186,7 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
       console.error("JSON Parse Error", text);
       data = { minPrice: 0, maxPrice: 0, explanation: "Error parsing data." };
     }
-    // Extract sources from Grounding Metadata
-    const sources: Source[] = [];
-    const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
-    if (chunks) {
-      chunks.forEach((chunk: any) => {
-        if (chunk.web?.uri && chunk.web?.title) {
-          sources.push({ title: chunk.web.title, uri: chunk.web.uri });
-        }
-      });
-    }
-    // Extract sources from JSON response and merge
-    if (data.sources && Array.isArray(data.sources)) {
-      data.sources.forEach((s: any) => {
-        if (s.title && s.uri && !sources.some(existing => existing.uri === s.uri)) {
-          sources.push({ title: s.title, uri: s.uri });
-        }
-      });
-    }
+    // Sources are already fetched from Serper API at the beginning of the function
     // Sanitize Breakdown Data (Force numbers)
     let landRate = Number(data.breakdown?.landRatePerCent || 0);
     // Guardrail: If rate is > 500, it's likely in Rupees. Convert to Lakhs.
@@ -234,3 +255,4 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     throw new Error("Failed to fetch prediction.");
   }
 };
+
