@@ -116,29 +116,29 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     - Identify 2-3 "Micro-Markets" inside ${input.locality} (e.g. "Near Junction: High Price", "Interior: Budget").
           - Vary prices based on "Premium", "Mid-Range", "Budget" clusters typical for this area.
     
-    RETURN JSON ONLY:
+    RETURN STRICTLY VALID JSON ONLY (NO COMMENTS):
     {
-      "minPrice": number, // IN LAKHS
-      "maxPrice": number, // IN LAKHS
+      "minPrice": number,
+      "maxPrice": number,
       "currency": "INR",
       "explanation": "Short textual summary.",
       "recommendation": "One sentence advice.",
-      "estimatedLandValue": number, // IN LAKHS
-      "estimatedStructureValue": number, // IN LAKHS
+      "estimatedLandValue": number,
+      "estimatedStructureValue": number,
       "breakdown": {
-        "landRatePerCent": number, // IN LAKHS
-        "landTotal": number, // IN LAKHS
-        "structureRatePerSqFt": number, // IN RUPEES
-        "structureTotalBeforeDepreciation": number, // IN LAKHS
+        "landRatePerCent": number,
+        "landTotal": number,
+        "structureRatePerSqFt": number,
+        "structureTotalBeforeDepreciation": number,
         "depreciationPercentage": number,
-        "finalStructureValue": number, // IN LAKHS
+        "finalStructureValue": number,
         "roadAccessAdjustment": string
       },
       "investment": {
-         "rentalYield": "string (e.g. 3.5%)",
-         "appreciationForecast": "string (e.g. 8% Annually)",
+         "rentalYield": "string",
+         "appreciationForecast": "string",
          "demandTrend": "High" | "Moderate" | "Low",
-         "marketSentiment": "string (Brief reason for trend)"
+         "marketSentiment": "string"
       },
       "nriMetrics": {
          "suitabilityScore": number,
@@ -152,7 +152,7 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
          }
       },
       "geoSpatial": {
-         "terrain": "string (e.g. Elevated/Hilly)",
+         "terrain": "string",
          "neighborhoodVibe": "string",
          "priceGradient": "string",
          "growthDrivers": ["string", "string"],
