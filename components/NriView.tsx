@@ -44,20 +44,20 @@ const NriView: React.FC<NriViewProps> = ({ result }) => {
                     </div>
                 </div>
 
-                {/* Connectivity */}
-                <div className="space-y-4 flex flex-col justify-center">
-                    <h4 className="text-sm font-semibold text-slate-400 uppercase">Key Connectivity</h4>
-                    <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700 flex justify-between items-center transition hover:bg-slate-700/50">
+                {/* Connectivity & Infra */}
+                <div className="space-y-3 flex flex-col justify-center col-span-2 md:col-span-1">
+                    <h4 className="text-sm font-semibold text-slate-400 uppercase mb-1">Connectivity</h4>
+                    <div className="bg-slate-800/50 p-3 rounded-xl border border-slate-700 flex justify-between items-center transition hover:bg-slate-700/50">
                          <div className="flex items-center">
-                            <svg className="w-5 h-5 text-blue-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                            <span className="text-slate-200">Intl Airport (TRV)</span>
+                            <svg className="w-4 h-4 text-blue-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                            <span className="text-slate-200 text-sm">Airport (TRV)</span>
                          </div>
                          <span className="font-mono font-bold text-white">{nriMetrics.airportDist} km</span>
                     </div>
-                    <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700 flex justify-between items-center transition hover:bg-slate-700/50">
+                    <div className="bg-slate-800/50 p-3 rounded-xl border border-slate-700 flex justify-between items-center transition hover:bg-slate-700/50">
                          <div className="flex items-center">
-                            <svg className="w-5 h-5 text-pink-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                            <span className="text-slate-200">Lulu Mall</span>
+                            <svg className="w-4 h-4 text-pink-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                            <span className="text-slate-200 text-sm">Lulu Mall</span>
                          </div>
                          <span className="font-mono font-bold text-white">{nriMetrics.mallDist} km</span>
                     </div>
@@ -82,6 +82,54 @@ const NriView: React.FC<NriViewProps> = ({ result }) => {
                 </div>
              </div>
         </div>
+
+        {/* Social Infrastructure - The Mom Test */}
+        {nriMetrics.socialInfra && (
+            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm animate-fade-in-up">
+                 <h4 className="font-bold text-gray-800 mb-4 flex items-center text-lg">
+                    <span className="bg-purple-100 p-1.5 rounded-lg mr-2">
+                        <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </span>
+                    Social Infrastructure (The Mom Test)
+                 </h4>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    {/* School Card */}
+                    <div className="flex items-start p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <div className="flex-shrink-0 mr-4 bg-white p-3 rounded-full shadow-sm">
+                            <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        </div>
+                        <div>
+                            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Nearest Top School</p>
+                            <h5 className="text-lg font-bold text-gray-900">{nriMetrics.socialInfra.nearestSchool.name}</h5>
+                            <div className="flex items-center mt-1">
+                                <span className={`text-sm font-bold px-2 py-0.5 rounded ${nriMetrics.socialInfra.nearestSchool.distance < 5 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                    {nriMetrics.socialInfra.nearestSchool.distance} km
+                                </span>
+                                <span className="text-xs text-gray-500 ml-2">away</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Hospital Card */}
+                    <div className="flex items-start p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <div className="flex-shrink-0 mr-4 bg-white p-3 rounded-full shadow-sm">
+                            <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        </div>
+                        <div>
+                            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Nearest Major Hospital</p>
+                            <h5 className="text-lg font-bold text-gray-900">{nriMetrics.socialInfra.nearestHospital.name}</h5>
+                            <div className="flex items-center mt-1">
+                                <span className={`text-sm font-bold px-2 py-0.5 rounded ${nriMetrics.socialInfra.nearestHospital.distance < 5 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                    {nriMetrics.socialInfra.nearestHospital.distance} km
+                                </span>
+                                <span className="text-xs text-gray-500 ml-2">away</span>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+        )}
         
         <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
              <h4 className="font-bold text-gray-800 mb-3">Expert Recommendation for NRI Buyers</h4>
@@ -95,3 +143,4 @@ const NriView: React.FC<NriViewProps> = ({ result }) => {
 };
 
 export default NriView;
+
