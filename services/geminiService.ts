@@ -1,7 +1,5 @@
-
 import { GoogleGenAI } from "@google/genai";
 import { UserInput, PredictionResult, PropertyType, Source } from "../types";
-
 export const predictPrice = async (input: UserInput): Promise<PredictionResult> => {
   // Initialize client strictly inside the function to prevent crash on app load
   const apiKey = process.env.API_KEY;
@@ -10,7 +8,6 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
   }
   
   const ai = new GoogleGenAI({ apiKey });
-
   const isPlot = input.type === PropertyType.PLOT;
   
   // Construct features string
@@ -18,7 +15,6 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
   if (!isPlot) {
     features += `, Built Area: ${input.builtArea} sq ft, Bedrooms: ${input.bedrooms}, Age: ${input.propertyAge}`;
   }
-
   const prompt = `
     Act as a senior Real Estate Investment Analyst & Surveyor for Trivandrum (Thiruvananthapuram).
     
@@ -30,12 +26,12 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     - Land Size: ${input.plotArea} cents
     - Beach Distance: ${input.distanceToBeach} km
     - Specs: ${features}
-
     VALUATION ALGORITHM (STRICTLY FOLLOW THIS):
     
     STEP 1: FIND THE LAND RATE (R)
     - Search for "Land price per cent in ${input.locality} Trivandrum 2024 2025".
     - Find the MEDIAN asking rate.
+    - **CRITICAL**: ALL MONETARY VALUES MUST BE IN **LAKHS**. DO NOT USE RUPEES. (e.g. 5 Lakhs, NOT 500000).
     - **Guardrails**: 
       - If Locality is 'Kowdiar' or 'Sasthamangalam', R must be >= 25 Lakhs/cent.
       - If Locality is 'St. Andrews' or 'Veli' AND Distance < 1km, R must be >= 8 Lakhs/cent.
@@ -43,8 +39,7 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     - **Rounding**: Round R to the nearest 0.25 Lakhs.
     
     STEP 2: CALCULATE LAND VALUE
-    - Land Value = R * ${input.plotArea}
-
+    - Land Value = R * ${input.plotArea} (Result in LAKHS)
     STEP 3: CALCULATE STRUCTURE VALUE (S) - If Property
     - If Plot, S = 0.
     - Construction Cost (C): Use ₹2800/sqft as baseline for standard, ₹3500/sqft for premium.
@@ -53,7 +48,6 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
       - < 10 Years: 15%
       - > 10 Years: 35%
     - Structure Value = (${input.builtArea || 0} * C / 100000) * (1 - D/100). (Convert C to Lakhs)
-
     STEP 4: ADJUSTMENTS
     - Calculate Total = Land Value + Structure Value.
     - Apply Road Adjustment:
@@ -78,7 +72,6 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     - Villa Feasibility:
       - TRUE if Plot >= 4 cents AND Road != "Narrow".
       - FALSE otherwise.
-
     STEP 6: GEOSPATIAL CLUSTERING
     - Analyze Terrain: Is ${input.locality} hilly/elevated or coastal flatland?
     - Analyze Vibe: Pure Residential, Commercial Mix, or Developing?
@@ -87,23 +80,22 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     - Generate "Market Depth" data: Create 12 simulated comparable listings for a Scatter Plot.
          - Vary sizes slightly around ${input.plotArea} cents.
          - Vary prices based on "Premium", "Mid-Range", "Budget" clusters typical for this area.
-
     RETURN JSON ONLY:
     {
-      "minPrice": number,
-      "maxPrice": number,
+      "minPrice": number, // IN LAKHS
+      "maxPrice": number, // IN LAKHS
       "currency": "INR",
       "explanation": "Short textual summary.",
       "recommendation": "One sentence advice.",
-      "estimatedLandValue": number,
-      "estimatedStructureValue": number,
+      "estimatedLandValue": number, // IN LAKHS
+      "estimatedStructureValue": number, // IN LAKHS
       "breakdown": {
-        "landRatePerCent": number,
-        "landTotal": number,
-        "structureRatePerSqFt": number,
-        "structureTotalBeforeDepreciation": number,
+        "landRatePerCent": number, // IN LAKHS
+        "landTotal": number, // IN LAKHS
+        "structureRatePerSqFt": number, // IN RUPEES
+        "structureTotalBeforeDepreciation": number, // IN LAKHS
         "depreciationPercentage": number,
-        "finalStructureValue": number,
+        "finalStructureValue": number, // IN LAKHS
         "roadAccessAdjustment": string
       },
       "investment": {
@@ -137,7 +129,6 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
       }
     }
   `;
-
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
@@ -149,7 +140,6 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
         topK: 1,
       },
     });
-
     const text = response.text || "{}";
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     const jsonString = jsonMatch ? jsonMatch[0] : "{}";
@@ -161,7 +151,6 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
         console.error("JSON Parse Error", text);
         data = { minPrice: 0, maxPrice: 0, explanation: "Error parsing data." };
     }
-
     // Extract sources
     const sources: Source[] = [];
     const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
@@ -172,18 +161,29 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
         }
       });
     }
-
     // Sanitize Breakdown Data (Force numbers)
+    let landRate = Number(data.breakdown?.landRatePerCent || 0);
+    // Guardrail: If rate is > 500, it's likely in Rupees. Convert to Lakhs.
+    if (landRate > 500) {
+        landRate = landRate / 100000;
+    }
+    let landTotal = Number(data.breakdown?.landTotal || 0);
+    if (landTotal > 10000) { // > 100 Cr is suspicious for land total
+        landTotal = landTotal / 100000;
+    }
+    let structureTotal = Number(data.breakdown?.finalStructureValue || 0);
+    if (structureTotal > 5000) {
+        structureTotal = structureTotal / 100000;
+    }
     const breakdown = data.breakdown ? {
-        landRatePerCent: Number(data.breakdown.landRatePerCent || 0),
-        landTotal: Number(data.breakdown.landTotal || 0),
+        landRatePerCent: landRate,
+        landTotal: landTotal,
         structureRatePerSqFt: Number(data.breakdown.structureRatePerSqFt || 0),
         structureTotalBeforeDepreciation: Number(data.breakdown.structureTotalBeforeDepreciation || 0),
         depreciationPercentage: Number(data.breakdown.depreciationPercentage || 0),
-        finalStructureValue: Number(data.breakdown.finalStructureValue || 0),
+        finalStructureValue: structureTotal,
         roadAccessAdjustment: String(data.breakdown.roadAccessAdjustment || '0%')
     } : undefined;
-
     // Sanitize NRI Metrics
     const nriMetrics = data.nriMetrics ? {
         suitabilityScore: Number(data.nriMetrics.suitabilityScore || 0),
@@ -202,22 +202,28 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
             }
         } : undefined
     } : undefined;
-
+    let minPrice = Number(data.minPrice || 0);
+    if (minPrice > 10000) minPrice = minPrice / 100000;
+    let maxPrice = Number(data.maxPrice || 0);
+    if (maxPrice > 10000) maxPrice = maxPrice / 100000;
+    let estimatedLandValue = Number(data.estimatedLandValue || 0);
+    if (estimatedLandValue > 10000) estimatedLandValue = estimatedLandValue / 100000;
+    let estimatedStructureValue = Number(data.estimatedStructureValue || 0);
+    if (estimatedStructureValue > 5000) estimatedStructureValue = estimatedStructureValue / 100000;
     return {
-      minPrice: Number(data.minPrice || 0),
-      maxPrice: Number(data.maxPrice || 0),
+      minPrice: minPrice,
+      maxPrice: maxPrice,
       currency: "INR",
       explanation: data.explanation || "Estimation based on market trends.",
       recommendation: data.recommendation || "N/A",
       sources: sources,
-      estimatedLandValue: Number(data.estimatedLandValue || 0),
-      estimatedStructureValue: Number(data.estimatedStructureValue || 0),
+      estimatedLandValue: estimatedLandValue,
+      estimatedStructureValue: estimatedStructureValue,
       breakdown: breakdown,
       investment: data.investment,
       nriMetrics: nriMetrics,
       geoSpatial: data.geoSpatial
     };
-
   } catch (error) {
     console.error("API Error:", error);
     throw new Error("Failed to fetch prediction.");
