@@ -37,12 +37,18 @@ export interface InvestmentMetrics {
   marketSentiment: string; // Short sentence
 }
 
+export interface SocialInfra {
+  nearestSchool: { name: string; distance: number };
+  nearestHospital: { name: string; distance: number };
+}
+
 export interface NriMetrics {
   suitabilityScore: number; // 0 to 10
   airportDist: number; // in km (Estimate)
   mallDist: number; // in km (Lulu)
   isVillaFeasible: boolean;
   villaFeasibilityReason: string;
+  socialInfra?: SocialInfra; // New "Mom Test" data
 }
 
 export interface Comparable {
@@ -80,4 +86,3 @@ export interface ChartData {
   name: string;
   price: number;
 }
-
