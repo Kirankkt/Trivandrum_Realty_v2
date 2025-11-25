@@ -1,8 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
 import { UserInput, PredictionResult, PropertyType, Source } from "../types";
+import { BENCHMARK_RATES } from "../constants";
 // Fetch real sources using Serper API
 const fetchRealSources = async (locality: string): Promise<Source[]> => {
-  const serperApiKey = process.env.SERPER_API_KEY;
+  // Try standard Vite env var first, fallback to process.env for safety
+  const serperApiKey = import.meta.env.VITE_SERPER_API_KEY || process.env.SERPER_API_KEY;
   if (!serperApiKey) {
     console.warn("Serper API Key is missing. Sources will not be available.");
     return [];
@@ -15,7 +17,7 @@ const fetchRealSources = async (locality: string): Promise<Source[]> => {
         'X-API-KEY': serperApiKey,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ q: query, num: 5 })
+      body: JSON.stringify({ q: query, num: 10 })
     });
     if (!response.ok) {
       console.error('Serper API error:', response.statusText);
@@ -25,12 +27,20 @@ const fetchRealSources = async (locality: string): Promise<Source[]> => {
     const sources: Source[] = [];
     // Extract organic results
     if (data.organic && Array.isArray(data.organic)) {
-      data.organic.slice(0, 5).forEach((result: any) => {
+      data.organic.forEach((result: any) => {
         if (result.link && result.title) {
           sources.push({ title: result.title, uri: result.link });
         }
       });
     }
+    // Prioritize known real estate domains
+    const PRIORITY_DOMAINS = ['99acres', 'magicbricks', 'housing.com', 'commonfloor', 'olx.in', 'keralarealestate', 'squareyards'];
+    sources.sort((a, b) => {
+      const aPriority = PRIORITY_DOMAINS.some(d => a.uri.includes(d)) ? 1 : 0;
+      const bPriority = PRIORITY_DOMAINS.some(d => b.uri.includes(d)) ? 1 : 0;
+      return bPriority - aPriority; // Higher priority first
+    });
+    return sources.slice(0, 10);
     return sources;
   } catch (error) {
     console.error('Error fetching sources from Serper:', error);
@@ -41,7 +51,7 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
   // Fetch real sources first
   const sources = await fetchRealSources(input.locality);
   // Initialize client strictly inside the function to prevent crash on app load
-  const apiKey = process.env.API_KEY;
+  const apiKey = import.meta.env.VITE_API_KEY || process.env.API_KEY;
   if (!apiKey) {
     throw new Error("API Key is missing. Please check your Netlify configuration.");
   }
@@ -63,6 +73,14 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     - Land Size: ${input.plotArea} cents
     - Beach Distance: ${input.distanceToBeach} km
     - Specs: ${features}
+    - REFERENCE BENCHMARKS (Lakhs/cent):
+      - Premium (Kowdiar): ~${BENCHMARK_RATES.PREMIUM}
+      - Tech Hub (Kazhakkoottam): ~${BENCHMARK_RATES.TECH_HUB}
+      - City Avg: ~${BENCHMARK_RATES.CITY_AVG}
+      - City Avg: ~${BENCHMARK_RATES.CITY_AVG}
+      - Suburb: ~${BENCHMARK_RATES.SUBURB}
+    MARKET DATA CONTEXT (PRIORITIZE THESE SOURCES):
+    ${sources.map((s, i) => `${i + 1}. ${s.title} (${s.uri})`).join('\n    ')}
     VALUATION ALGORITHM (STRICTLY FOLLOW THIS):
     
     STEP 1: FIND THE LAND RATE (R)
@@ -72,7 +90,8 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     - **Guardrails**: 
       - If Locality is 'Kowdiar' or 'Sasthamangalam', R must be >= 25 Lakhs/cent.
       - If Locality is 'St. Andrews' or 'Veli' AND Distance < 1km, R must be >= 8 Lakhs/cent.
-      - If Locality is inland (>2km from sea), IGNORE beach distance for pricing.
+      - **MAXIMUM CAP**: Unless there is explicit evidence of "Commercial" zoning, CAP residential land rates at 2.5x the City Avg (approx 25-30 Lakhs/cent) for non-premium areas.
+      - **Kazhakkoottam Specific**: Expect 12-18 Lakhs/cent. If > 25, assume commercial and adjust down for residential query.
     - **Rounding**: Round R to the nearest 0.25 Lakhs.
     
     STEP 2: CALCULATE LAND VALUE
@@ -255,4 +274,5 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     throw new Error("Failed to fetch prediction.");
   }
 };
+
 
