@@ -6,10 +6,8 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
   if (!apiKey) {
     throw new Error("API Key is missing. Please check your Netlify configuration.");
   }
-  
   const ai = new GoogleGenAI({ apiKey });
   const isPlot = input.type === PropertyType.PLOT;
-  
   // Construct features string
   let features = `Road Access: ${input.roadWidth}`;
   if (!isPlot) {
@@ -77,9 +75,8 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     - Analyze Vibe: Pure Residential, Commercial Mix, or Developing?
     - Analyze Price Gradient: e.g., "Prices higher near Main Road."
     - Identify 2-3 "Micro-Markets" inside ${input.locality} (e.g. "Near Junction: High Price", "Interior: Budget").
-    - Generate "Market Depth" data: Create 12 simulated comparable listings for a Scatter Plot.
-         - Vary sizes slightly around ${input.plotArea} cents.
-         - Vary prices based on "Premium", "Mid-Range", "Budget" clusters typical for this area.
+          - Vary prices based on "Premium", "Mid-Range", "Budget" clusters typical for this area.
+    
     RETURN JSON ONLY:
     {
       "minPrice": number, // IN LAKHS
@@ -87,6 +84,7 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
       "currency": "INR",
       "explanation": "Short textual summary.",
       "recommendation": "One sentence advice.",
+      "sources": [ { "title": "string", "uri": "string" } ], // LIST SPECIFIC URLS USED
       "estimatedLandValue": number, // IN LAKHS
       "estimatedStructureValue": number, // IN LAKHS
       "breakdown": {
@@ -136,22 +134,21 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
       config: {
         tools: [{ googleSearch: {} }],
         temperature: 0.1, // Slight creativity for data generation
-        seed: 42, 
+        seed: 42,
         topK: 1,
       },
     });
     const text = response.text || "{}";
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     const jsonString = jsonMatch ? jsonMatch[0] : "{}";
-    
     let data: any = {};
     try {
-        data = JSON.parse(jsonString);
+      data = JSON.parse(jsonString);
     } catch (e) {
-        console.error("JSON Parse Error", text);
-        data = { minPrice: 0, maxPrice: 0, explanation: "Error parsing data." };
+      console.error("JSON Parse Error", text);
+      data = { minPrice: 0, maxPrice: 0, explanation: "Error parsing data." };
     }
-    // Extract sources
+    // Extract sources from Grounding Metadata
     const sources: Source[] = [];
     const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
     if (chunks) {
@@ -161,46 +158,54 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
         }
       });
     }
+    // Extract sources from JSON response and merge
+    if (data.sources && Array.isArray(data.sources)) {
+      data.sources.forEach((s: any) => {
+        if (s.title && s.uri && !sources.some(existing => existing.uri === s.uri)) {
+          sources.push({ title: s.title, uri: s.uri });
+        }
+      });
+    }
     // Sanitize Breakdown Data (Force numbers)
     let landRate = Number(data.breakdown?.landRatePerCent || 0);
     // Guardrail: If rate is > 500, it's likely in Rupees. Convert to Lakhs.
     if (landRate > 500) {
-        landRate = landRate / 100000;
+      landRate = landRate / 100000;
     }
     let landTotal = Number(data.breakdown?.landTotal || 0);
     if (landTotal > 10000) { // > 100 Cr is suspicious for land total
-        landTotal = landTotal / 100000;
+      landTotal = landTotal / 100000;
     }
     let structureTotal = Number(data.breakdown?.finalStructureValue || 0);
     if (structureTotal > 5000) {
-        structureTotal = structureTotal / 100000;
+      structureTotal = structureTotal / 100000;
     }
     const breakdown = data.breakdown ? {
-        landRatePerCent: landRate,
-        landTotal: landTotal,
-        structureRatePerSqFt: Number(data.breakdown.structureRatePerSqFt || 0),
-        structureTotalBeforeDepreciation: Number(data.breakdown.structureTotalBeforeDepreciation || 0),
-        depreciationPercentage: Number(data.breakdown.depreciationPercentage || 0),
-        finalStructureValue: structureTotal,
-        roadAccessAdjustment: String(data.breakdown.roadAccessAdjustment || '0%')
+      landRatePerCent: landRate,
+      landTotal: landTotal,
+      structureRatePerSqFt: Number(data.breakdown.structureRatePerSqFt || 0),
+      structureTotalBeforeDepreciation: Number(data.breakdown.structureTotalBeforeDepreciation || 0),
+      depreciationPercentage: Number(data.breakdown.depreciationPercentage || 0),
+      finalStructureValue: structureTotal,
+      roadAccessAdjustment: String(data.breakdown.roadAccessAdjustment || '0%')
     } : undefined;
     // Sanitize NRI Metrics
     const nriMetrics = data.nriMetrics ? {
-        suitabilityScore: Number(data.nriMetrics.suitabilityScore || 0),
-        airportDist: Number(data.nriMetrics.airportDist || 0),
-        mallDist: Number(data.nriMetrics.mallDist || 0),
-        isVillaFeasible: Boolean(data.nriMetrics.isVillaFeasible),
-        villaFeasibilityReason: String(data.nriMetrics.villaFeasibilityReason || ""),
-        socialInfra: data.nriMetrics.socialInfra ? {
-            nearestSchool: {
-                name: String(data.nriMetrics.socialInfra.nearestSchool?.name || "N/A"),
-                distance: Number(data.nriMetrics.socialInfra.nearestSchool?.distance || 0)
-            },
-            nearestHospital: {
-                name: String(data.nriMetrics.socialInfra.nearestHospital?.name || "N/A"),
-                distance: Number(data.nriMetrics.socialInfra.nearestHospital?.distance || 0)
-            }
-        } : undefined
+      suitabilityScore: Number(data.nriMetrics.suitabilityScore || 0),
+      airportDist: Number(data.nriMetrics.airportDist || 0),
+      mallDist: Number(data.nriMetrics.mallDist || 0),
+      isVillaFeasible: Boolean(data.nriMetrics.isVillaFeasible),
+      villaFeasibilityReason: String(data.nriMetrics.villaFeasibilityReason || ""),
+      socialInfra: data.nriMetrics.socialInfra ? {
+        nearestSchool: {
+          name: String(data.nriMetrics.socialInfra.nearestSchool?.name || "N/A"),
+          distance: Number(data.nriMetrics.socialInfra.nearestSchool?.distance || 0)
+        },
+        nearestHospital: {
+          name: String(data.nriMetrics.socialInfra.nearestHospital?.name || "N/A"),
+          distance: Number(data.nriMetrics.socialInfra.nearestHospital?.distance || 0)
+        }
+      } : undefined
     } : undefined;
     let minPrice = Number(data.minPrice || 0);
     if (minPrice > 10000) minPrice = minPrice / 100000;
