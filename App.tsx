@@ -103,7 +103,7 @@ const App: React.FC = () => {
                     />
                   )}
                   {activeTab === 'historical' && (
-                    <HistoricalModels />
+                    <HistoricalModels result={result} />
                   )}
                 </div>
               </>
@@ -118,5 +118,3 @@ const App: React.FC = () => {
   );
 };
 export default App;
-
-
