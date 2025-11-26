@@ -134,6 +134,14 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     - Analyze Price Gradient: e.g., "Prices higher near Main Road."
     - Identify 2-3 "Micro-Markets" inside ${input.locality} (e.g. "Near Junction: High Price", "Interior: Budget").
           - Vary prices based on "Premium", "Mid-Range", "Budget" clusters typical for this area.
+    STEP 7: DEVELOPER ANALYSIS (ROI & COMPARABLES)
+    - **Comparables**: Extract the TOP 3 most relevant listings from the "MARKET DATA CONTEXT" above.
+      - Must be similar in size/type to the input.
+      - Return Title, Size (cents), Price (Lakhs), and Link.
+    - **Project Feasibility**:
+      - Estimate maxVillas that can fit on this plot (assume 4 cents/villa + road).
+      - Estimate projectedSalePrice per villa (Land + 2000sqft Premium Villa + 25% Margin).
+      - Estimate demandForVillas (High/Med/Low).
     
     RETURN STRICTLY VALID JSON ONLY (NO COMMENTS):
     {
@@ -178,10 +186,18 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
          "microMarkets": [
             { "name": "string", "priceLevel": "High/Med/Low", "description": "string" }
          ],
-         "marketDepth": [
+          "marketDepth": [
             { "id": 1, "size": number, "price": number, "type": "Premium" }
-         ]
-      }
+          ]
+       },
+       "developerAnalysis": {
+          "maxVillas": number,
+          "projectedSalePrice": number,
+          "demandForVillas": "High" | "Moderate" | "Low",
+          "comparables": [
+             { "id": 1, "title": "string", "size": number, "price": number, "link": "string" }
+          ]
+       }
     }
   `;
   try {
@@ -267,12 +283,26 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
       breakdown: breakdown,
       investment: data.investment,
       nriMetrics: nriMetrics,
-      geoSpatial: data.geoSpatial
+      geoSpatial: data.geoSpatial,
+      developerAnalysis: data.developerAnalysis ? {
+        maxVillas: Number(data.developerAnalysis.maxVillas || 1),
+        projectedSalePrice: Number(data.developerAnalysis.projectedSalePrice || 0),
+        demandForVillas: data.developerAnalysis.demandForVillas || 'Moderate',
+        comparables: Array.isArray(data.developerAnalysis.comparables) ? data.developerAnalysis.comparables.map((c: any, i: number) => ({
+          id: i,
+          title: c.title || "Listing",
+          size: Number(c.size || 0),
+          price: Number(c.price || 0),
+          link: c.link || "",
+          type: 'Mid-Range' // Default
+        })) : []
+      } : undefined
     };
   } catch (error) {
     console.error("API Error:", error);
     throw new Error("Failed to fetch prediction.");
   }
 };
+
 
 
