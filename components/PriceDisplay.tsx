@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { PredictionResult } from '../types';
+import DeveloperInsights from './DeveloperInsights';
 interface PriceDisplayProps {
   result: PredictionResult | null;
 }
@@ -98,6 +99,10 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result }) => {
           <h4 className="font-semibold text-teal-800 mb-1">Recommendation</h4>
           <p className="text-teal-700 text-sm italic">"{result.recommendation}"</p>
         </div>
+        {/* Developer Mode Integration */}
+        {result.developerAnalysis && (
+          <DeveloperInsights result={result} />
+        )}
         {result.sources.length > 0 && (
           <div className="mt-4 pt-4 border-t border-gray-100">
             <button
@@ -133,3 +138,4 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result }) => {
   );
 };
 export default PriceDisplay;
+
