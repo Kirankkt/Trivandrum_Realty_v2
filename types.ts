@@ -1,9 +1,7 @@
-
 export enum PropertyType {
   PROPERTY = 'Property (House/Villa)',
   PLOT = 'Plot (Land Only)'
 }
-
 export interface UserInput {
   type: PropertyType;
   locality: string;
@@ -14,12 +12,10 @@ export interface UserInput {
   propertyAge?: string; // New, <5, 5-10, >10
   roadWidth?: string; // Lorry access, Car access, Narrow
 }
-
 export interface Source {
   title: string;
   uri: string;
 }
-
 export interface CalculationBreakdown {
   landRatePerCent: number; // In Lakhs
   landTotal: number; // In Lakhs
@@ -29,19 +25,16 @@ export interface CalculationBreakdown {
   finalStructureValue: number; // In Lakhs
   roadAccessAdjustment: string; // e.g., "+5%"
 }
-
 export interface InvestmentMetrics {
   rentalYield: string; // e.g., "3.5%"
   appreciationForecast: string; // e.g., "8-10% Annually"
   demandTrend: 'High' | 'Moderate' | 'Low';
   marketSentiment: string; // Short sentence
 }
-
 export interface SocialInfra {
   nearestSchool: { name: string; distance: number };
   nearestHospital: { name: string; distance: number };
 }
-
 export interface NriMetrics {
   suitabilityScore: number; // 0 to 10
   airportDist: number; // in km (Estimate)
@@ -50,14 +43,14 @@ export interface NriMetrics {
   villaFeasibilityReason: string;
   socialInfra?: SocialInfra; // New "Mom Test" data
 }
-
 export interface Comparable {
   id: number;
+  title: string;
   size: number; // Cents or Sqft
   price: number; // In Lakhs
+  link: string;
   type: 'Premium' | 'Mid-Range' | 'Budget';
 }
-
 export interface GeospatialAnalysis {
   terrain: string; // e.g., "Elevated / Hilly", "Coastal Flatland"
   neighborhoodVibe: string; // e.g., "Quiet Residential", "Commercial Hub"
@@ -66,7 +59,12 @@ export interface GeospatialAnalysis {
   microMarkets: { name: string; priceLevel: string; description: string }[]; // e.g. "Golf Links Rd: High"
   marketDepth: Comparable[]; // Simulated comparable properties for clustering chart
 }
-
+export interface DeveloperAnalysis {
+  maxVillas: number; // Est. number of units
+  projectedSalePrice: number; // Per Villa in Lakhs
+  demandForVillas: 'High' | 'Moderate' | 'Low';
+  comparables: Comparable[];
+}
 export interface PredictionResult {
   minPrice: number; // In Lakhs
   maxPrice: number; // In Lakhs
@@ -80,9 +78,10 @@ export interface PredictionResult {
   investment?: InvestmentMetrics; // New investment data
   nriMetrics?: NriMetrics; // Developer/NRI data
   geoSpatial?: GeospatialAnalysis; // New Map/Terrain data
+  developerAnalysis?: DeveloperAnalysis; // New ROI data
 }
-
 export interface ChartData {
   name: string;
   price: number;
 }
+
