@@ -84,4 +84,3 @@ export interface ChartData {
   name: string;
   price: number;
 }
-
