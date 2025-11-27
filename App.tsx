@@ -2,17 +2,17 @@ import React, { useState } from 'react';
 import Header from './components/Header';
 import PropertyForm from './components/PropertyForm';
 import PriceDisplay from './components/PriceDisplay';
-import InvestmentDashboard from './components/InvestmentDashboard';
-import GeospatialView from './components/GeospatialView';
-import NriView from './components/NriView';
 import HistoricalModels from './components/HistoricalModels';
+import GeospatialView from './components/GeospatialView';
+import TopLocations from './components/TopLocations';
+import NriView from './components/NriView';
 import { UserInput, PredictionResult } from './types';
 import { predictPrice } from './services/geminiService';
 const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PredictionResult | null>(null);
   const [currentInput, setCurrentInput] = useState<UserInput | null>(null);
-  const [activeTab, setActiveTab] = useState<'valuation' | 'nri' | 'geo' | 'historical'>('valuation');
+  const [activeTab, setActiveTab] = useState<'valuation' | 'nri' | 'geospatial' | 'historical' | 'trends'>('valuation');
   const handlePrediction = async (input: UserInput) => {
     setLoading(true);
     setResult(null);
@@ -76,6 +76,12 @@ const App: React.FC = () => {
                     Geospatial
                   </button>
                   <button
+                    onClick={() => setActiveTab('trends')}
+                    className={`flex-1 min-w-[100px] py-2.5 text-sm font-medium rounded-md transition-all ${activeTab === 'trends' ? 'bg-white text-teal-700 shadow' : 'text-gray-500 hover:text-gray-700'}`}
+                  >
+                    Market Trends
+                  </button>
+                  <button
                     onClick={() => setActiveTab('historical')}
                     className={`flex-1 min-w-[100px] py-2.5 text-sm font-medium rounded-md transition-all ${activeTab === 'historical' ? 'bg-white text-teal-700 shadow' : 'text-gray-500 hover:text-gray-700'}`}
                   >
@@ -95,6 +101,9 @@ const App: React.FC = () => {
                   )}
                   {activeTab === 'nri' && (
                     <NriView result={result} />
+                  )}
+                  {activeTab === 'trends' && (
+                    <TopLocations />
                   )}
                   {activeTab === 'geo' && (
                     <GeospatialView
