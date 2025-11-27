@@ -5,6 +5,7 @@ import PriceDisplay from './components/PriceDisplay';
 import HistoricalModels from './components/HistoricalModels';
 import GeospatialView from './components/GeospatialView';
 import TopLocations from './components/TopLocations';
+import DeveloperInsights from './components/DeveloperInsights';
 import NriView from './components/NriView';
 import { UserInput, PredictionResult } from './types';
 import { predictPrice } from './services/geminiService';
@@ -70,8 +71,8 @@ const App: React.FC = () => {
                     NRI Insights
                   </button>
                   <button
-                    onClick={() => setActiveTab('geo')}
-                    className={`flex-1 min-w-[100px] py-2.5 text-sm font-medium rounded-md transition-all ${activeTab === 'geo' ? 'bg-white text-teal-700 shadow' : 'text-gray-500 hover:text-gray-700'}`}
+                    onClick={() => setActiveTab('geospatial')}
+                    className={`flex-1 min-w-[100px] py-2.5 text-sm font-medium rounded-md transition-all ${activeTab === 'geospatial' ? 'bg-white text-teal-700 shadow' : 'text-gray-500 hover:text-gray-700'}`}
                   >
                     Geospatial
                   </button>
@@ -93,10 +94,7 @@ const App: React.FC = () => {
                   {activeTab === 'valuation' && (
                     <>
                       <PriceDisplay result={result} />
-                      <InvestmentDashboard
-                        result={result}
-                        localityName={currentInput?.locality || 'Selected Area'}
-                      />
+                      <DeveloperInsights result={result} />
                     </>
                   )}
                   {activeTab === 'nri' && (
@@ -105,7 +103,7 @@ const App: React.FC = () => {
                   {activeTab === 'trends' && (
                     <TopLocations />
                   )}
-                  {activeTab === 'geo' && (
+                  {activeTab === 'geospatial' && (
                     <GeospatialView
                       result={result}
                       locality={currentInput?.locality || ''}
