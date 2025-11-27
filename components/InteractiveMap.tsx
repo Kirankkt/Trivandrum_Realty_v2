@@ -1,32 +1,40 @@
 import React, { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import MarkerClusterGroup from 'react-leaflet-cluster';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { Comparable } from '../types';
-// Fix for default marker icon issues in React-Leaflet
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-let DefaultIcon = L.icon({
-    iconUrl: icon,
-    shadowUrl: iconShadow,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41]
-});
-L.Marker.prototype.options.icon = DefaultIcon;
+import { Comparable, GeospatialAnalysis } from '../types';
+// Custom Icons
+const createIcon = (color: string, type: 'house' | 'plot') => {
+    const emoji = type === 'house' ? '🏠' : '📍';
+    return L.divIcon({
+        className: 'custom-marker',
+        html: `<div style="background-color: ${color}; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3); font-size: 16px;">${emoji}</div>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+    });
+};
+const Icons = {
+    Premium: createIcon('#ef4444', 'house'), // Red
+    MidRange: createIcon('#eab308', 'house'), // Yellow
+    Budget: createIcon('#22c55e', 'house'), // Green
+    Plot: createIcon('#3b82f6', 'plot'), // Blue
+    Selected: createIcon('#6366f1', 'plot') // Indigo
+};
 interface InteractiveMapProps {
     comparables: Comparable[];
+    marketDepth?: GeospatialAnalysis['marketDepth'];
     locality: string;
 }
 // Component to update map center when locality changes
 const RecenterMap: React.FC<{ center: [number, number] }> = ({ center }) => {
     const map = useMap();
     useEffect(() => {
-        map.setView(center, 13);
+        map.setView(center, 14);
     }, [center, map]);
     return null;
 };
 // Approximate coordinates for Trivandrum localities (Fallback)
-// In a real app, you'd use a Geocoding API.
 const LOCALITY_COORDS: Record<string, [number, number]> = {
     'Trivandrum': [8.5241, 76.9366],
     'Kowdiar': [8.5241, 76.9566],
@@ -105,65 +113,85 @@ const LOCALITY_COORDS: Record<string, [number, number]> = {
     'Shangumugham': [8.4800, 76.9100],
     'Vellayani': [8.4300, 76.9900]
 };
-const InteractiveMap: React.FC<InteractiveMapProps> = ({ comparables, locality }) => {
+const InteractiveMap: React.FC<InteractiveMapProps> = ({ comparables, marketDepth, locality }) => {
     const center = LOCALITY_COORDS[locality] || LOCALITY_COORDS['Trivandrum'];
-    // Helper to get random offset for demo markers (to prevent overlap)
-    const getOffset = () => (Math.random() - 0.5) * 0.01;
+    // Helper to get random offset for demo markers
+    const getOffset = () => (Math.random() - 0.5) * 0.015;
     return (
         <div className="h-[500px] w-full rounded-xl overflow-hidden shadow-lg border border-gray-200 z-0 relative">
-            <MapContainer center={center} zoom={13} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+            <MapContainer center={center} zoom={14} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
                 <RecenterMap center={center} />
-                {/* Main Location Marker */}
-                <Marker position={center}>
-                    <Popup>
-                        <div className="text-center">
-                            <h3 className="font-bold text-teal-700">{locality}</h3>
-                            <p className="text-xs text-gray-500">Selected Location</p>
-                        </div>
-                    </Popup>
-                </Marker>
-                {/* Comparable Markers */}
-                {comparables.map((comp) => (
-                    <Marker
-                        key={comp.id}
-                        position={[center[0] + getOffset(), center[1] + getOffset()]} // Simulated position near locality
-                    >
+                <MarkerClusterGroup chunkedLoading>
+                    {/* Main Location Marker */}
+                    <Marker position={center} icon={Icons.Selected}>
                         <Popup>
-                            <div className="min-w-[200px]">
-                                <h4 className="font-bold text-gray-800 text-sm mb-1">{comp.title}</h4>
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="bg-teal-100 text-teal-800 text-xs px-2 py-0.5 rounded-full">
-                                        {comp.size} cents
-                                    </span>
-                                    <span className="font-bold text-teal-700">₹{comp.price} L</span>
-                                </div>
-                                <a
-                                    href={comp.link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block text-center w-full bg-teal-600 text-white text-xs py-1.5 rounded hover:bg-teal-700 transition-colors"
-                                >
-                                    View Listing
-                                </a>
+                            <div className="text-center">
+                                <h3 className="font-bold text-indigo-700">{locality}</h3>
+                                <p className="text-xs text-gray-500">Selected Location</p>
                             </div>
                         </Popup>
                     </Marker>
-                ))}
+                    {/* Comparable Markers */}
+                    {comparables.map((comp) => (
+                        <Marker
+                            key={`comp-${comp.id}`}
+                            position={[center[0] + getOffset(), center[1] + getOffset()]}
+                            icon={Icons.Plot}
+                        >
+                            <Popup>
+                                <div className="min-w-[200px]">
+                                    <h4 className="font-bold text-gray-800 text-sm mb-1">{comp.title}</h4>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <span className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full">
+                                            {comp.size} cents
+                                        </span>
+                                        <span className="font-bold text-blue-700">₹{comp.price} L</span>
+                                    </div>
+                                    <a
+                                        href={comp.link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="block text-center w-full bg-blue-600 text-white text-xs py-1.5 rounded hover:bg-blue-700 transition-colors"
+                                    >
+                                        View Listing
+                                    </a>
+                                </div>
+                            </Popup>
+                        </Marker>
+                    ))}
+                    {/* Market Depth Markers */}
+                    {marketDepth?.map((item) => {
+                        let icon = Icons.MidRange;
+                        if (item.type === 'Premium') icon = Icons.Premium;
+                        if (item.type === 'Budget') icon = Icons.Budget;
+                        const lat = center[0] + (item.latOffset || getOffset());
+                        const lng = center[1] + (item.lngOffset || getOffset());
+                        return (
+                            <Marker key={`depth-${item.id}`} position={[lat, lng]} icon={icon}>
+                                <Popup>
+                                    <div className="text-center">
+                                        <h4 className="font-bold text-gray-800 text-sm">{item.type} Listing</h4>
+                                        <p className="text-xs text-gray-500">{item.size} cents @ ₹{item.price} L</p>
+                                    </div>
+                                </Popup>
+                            </Marker>
+                        );
+                    })}
+                </MarkerClusterGroup>
             </MapContainer>
             {/* Legend Overlay */}
             <div className="absolute bottom-4 left-4 bg-white p-3 rounded-lg shadow-md z-[1000] text-xs border border-gray-200">
                 <h4 className="font-bold text-gray-700 mb-2">Map Legend</h4>
-                <div className="flex items-center mb-1">
-                    <span className="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
-                    <span>Selected Locality</span>
-                </div>
-                <div className="flex items-center">
-                    <span className="w-3 h-3 bg-blue-300 rounded-full mr-2 opacity-75"></span>
-                    <span>Comparable Listings</span>
+                <div className="grid grid-cols-2 gap-2">
+                    <div className="flex items-center"><span className="w-3 h-3 bg-indigo-500 rounded-full mr-2 border border-white shadow-sm"></span> Selected</div>
+                    <div className="flex items-center"><span className="w-3 h-3 bg-blue-500 rounded-full mr-2 border border-white shadow-sm"></span> Comparable</div>
+                    <div className="flex items-center"><span className="w-3 h-3 bg-green-500 rounded-full mr-2 border border-white shadow-sm"></span> Budget</div>
+                    <div className="flex items-center"><span className="w-3 h-3 bg-yellow-500 rounded-full mr-2 border border-white shadow-sm"></span> Mid-Range</div>
+                    <div className="flex items-center"><span className="w-3 h-3 bg-red-500 rounded-full mr-2 border border-white shadow-sm"></span> Premium</div>
                 </div>
             </div>
         </div>
