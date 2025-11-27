@@ -25,6 +25,7 @@ const GeospatialView: React.FC<GeospatialViewProps> = ({ result, locality }) => 
                 </h3>
                 <InteractiveMap
                     comparables={result.developerAnalysis?.comparables || []}
+                    marketDepth={result.geoSpatial?.marketDepth || []}
                     locality={locality}
                 />
             </div>
@@ -111,8 +112,8 @@ const GeospatialView: React.FC<GeospatialViewProps> = ({ result, locality }) => 
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{market.name}</td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${market.priceLevel === 'High' ? 'bg-red-100 text-red-800' :
-                                                market.priceLevel === 'Moderate' ? 'bg-yellow-100 text-yellow-800' :
-                                                    'bg-green-100 text-green-800'
+                                            market.priceLevel === 'Moderate' ? 'bg-yellow-100 text-yellow-800' :
+                                                'bg-green-100 text-green-800'
                                             }`}>
                                             {market.priceLevel}
                                         </span>
@@ -128,5 +129,6 @@ const GeospatialView: React.FC<GeospatialViewProps> = ({ result, locality }) => 
     );
 };
 export default GeospatialView;
+
 
 
