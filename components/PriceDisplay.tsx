@@ -1,59 +1,101 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PredictionResult } from '../types';
+import { supabase } from '../services/supabaseClient';
+import { User } from '@supabase/supabase-js';
 interface PriceDisplayProps {
   result: PredictionResult | null;
 }
 const PriceDisplay: React.FC<PriceDisplayProps> = ({ result }) => {
   const [showSources, setShowSources] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saved' | 'error'>('idle');
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+  }, []);
   if (!result) return null;
-  const formatCurrency = (value: number) => {
-    const val = Number(value); // Safety cast
-    if (val >= 100) {
-      return (val / 100).toFixed(2);
+  const handleSave = async () => {
+    if (!user) {
+      alert("Please Sign In to save estimates!");
+      return;
     }
-    return val.toFixed(2);
-  };
-  const getUnit = (value: number) => {
-    return Number(value) >= 100 ? "Cr" : "Lakhs";
-  };
-  const renderPriceRange = () => {
-    const minUnit = getUnit(result.minPrice);
-    const maxUnit = getUnit(result.maxPrice);
-    if (minUnit === 'Cr' && maxUnit === 'Cr') {
-      return (
-        <>
-          ₹{formatCurrency(result.minPrice)} - {formatCurrency(result.maxPrice)} <span className="text-2xl font-normal">Cr</span>
-        </>
-      );
+    setIsSaving(true);
+    try {
+      const { error } = await supabase.from('saved_estimates').insert({
+        user_id: user.id,
+        locality: 'Trivandrum', // Ideally passed as prop
+        property_type: 'Property', // Defaulting
+        estimated_price: `${result.priceRange.min}-${result.priceRange.max} Lakhs/cent`
+      });
+      if (error) throw error;
+      setSaveStatus('saved');
+    } catch (err) {
+      console.error('Error saving:', err);
+      setSaveStatus('error');
+    } finally {
+      setIsSaving(false);
     }
-    if (minUnit === 'Lakhs' && maxUnit === 'Lakhs') {
-      return (
-        <>
-          ₹{formatCurrency(result.minPrice)} - {formatCurrency(result.maxPrice)} <span className="text-2xl font-normal">Lakhs</span>
-        </>
-      );
-    }
-    return (
-      <>
-        ₹{formatCurrency(result.minPrice)} <span className="text-2xl font-normal">Lakhs</span> - {formatCurrency(result.maxPrice)} <span className="text-2xl font-normal">Cr</span>
-      </>
-    );
   };
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-teal-100 overflow-hidden animate-fade-in-up">
-      <div className="bg-gradient-to-r from-teal-600 to-cyan-600 px-6 py-8 text-white text-center">
-        <h3 className="text-lg font-medium opacity-90 mb-2">Estimated Market Value</h3>
-        <div className="text-5xl font-bold tracking-tight">
-          {renderPriceRange()}
+    <div className="bg-white rounded-xl shadow-lg p-6 mb-8 border border-teal-100 transform transition-all hover:scale-[1.01]">
+        <div className="flex justify-between items-start mb-4">
+            <div>
+                <h3 className="text-gray-500 font-medium text-sm uppercase tracking-wider">Estimated Fair Value</h3>
+                <div className="flex items-baseline mt-1">
+                    <span className="text-4xl font-extrabold text-teal-700">
+                    ₹{result.priceRange.min} - {result.priceRange.max}
+                    </span>
+                    <span className="text-gray-600 ml-2 font-medium">Lakhs / cent</span>
+                </div>
+            </div>
+            
+            {/* Save Button */}
+            <button
+                onClick={handleSave}
+                disabled={isSaving || saveStatus === 'saved'}
+                className={`flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
+                    saveStatus === 'saved' 
+                    ? 'bg-green-100 text-green-700 cursor-default'
+                    : 'bg-gray-100 text-gray-600 hover:bg-pink-50 hover:text-pink-600'
+                }`}
+            >
+                {saveStatus === 'saved' ? (
+                    <>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span>Saved</span>
+                    </>
+                ) : (
+                    <>
+                        <svg className="w-4 h-4" fill={saveStatus === 'error' ? 'none' : 'currentColor'} stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                        <span>{isSaving ? 'Saving...' : 'Save'}</span>
+                    </>
+                )}
+            </button>
         </div>
-        <p className="mt-2 opacity-80 text-sm">Based on current listings in {new Date().getFullYear()}</p>
-      </div>
-      <div className="p-6">
-        {/* Calculation Breakdown Table */}
+        {/* Confidence Meter */}
+        <div className="mb-6">
+          <div className="flex justify-between text-xs mb-1">
+            <span className="font-semibold text-gray-600">Confidence Score</span>
+            <span className={`font-bold ${result.confidence > 0.7 ? 'text-green-600' : 'text-yellow-600'}`}>
+              {Math.round(result.confidence * 100)}%
+            </span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div 
+              className={`h-2.5 rounded-full ${result.confidence > 0.7 ? 'bg-green-500' : 'bg-yellow-500'}`} 
+              style={{ width: `${result.confidence * 100}%` }}
+            ></div>
+          </div>
+        </div>
+        {/* Breakdown */}
         {result.breakdown && (
-          <div className="mb-6 bg-gray-50 rounded-lg border border-gray-200 p-4">
-            <h4 className="font-semibold text-gray-800 mb-3 flex items-center text-sm uppercase tracking-wide">
-              <svg className="w-4 h-4 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+          <div className="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-100">
+            <h4 className="font-semibold text-gray-700 mb-3 text-xs uppercase tracking-wide flex items-center">
+              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
               Valuation Math
             </h4>
             <div className="space-y-2 text-sm">
@@ -65,7 +107,7 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result }) => {
                 <span className="text-gray-600">Land Value (Total):</span>
                 <span className="font-medium text-teal-700">₹{Number(result.breakdown.landTotal || 0).toFixed(2)} Lakhs</span>
               </div>
-              {Number(result.estimatedStructureValue) > 0 && (
+              {Number(result.breakdown.finalStructureValue) > 0 && (
                 <>
                   <div className="flex justify-between items-center pb-2 border-b border-gray-200 border-dashed">
                     <span className="text-gray-600">Construction Rate:</span>
@@ -128,7 +170,6 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result }) => {
             )}
           </div>
         )}
-      </div>
     </div>
   );
 };
