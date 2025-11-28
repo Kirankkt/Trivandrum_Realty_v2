@@ -63,7 +63,7 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
   const prompt = `
     Act as a senior Real Estate Investment Analyst & Surveyor for Trivandrum (Thiruvananthapuram).
     
-    Your Task: Determine the **Market Land Rate** (per cent) and **Construction Cost** (per sqft) for the given location.
+    Your Task: Determine the **SINGLE MEDIAN Market Land Rate** (per cent) and **Construction Cost** (per sqft) for the given location.
     
     INPUT DATA:
     - Type: ${input.type}
@@ -78,9 +78,9 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
       - Suburb: ~${BENCHMARK_RATES.SUBURB}
     MARKET DATA CONTEXT (PRIORITIZE THESE SOURCES):
     ${sources.map((s, i) => `${i + 1}. ${s.title} (${s.uri})`).join('\n    ')}
-    STEP 1: DETERMINE LAND RATE (Lakhs per Cent)
+    STEP 1: DETERMINE MEDIAN LAND RATE (Lakhs per Cent)
     - Analyze the locality and sources.
-    - Provide a **Low** and **High** estimate for the LAND RATE per cent.
+    - Provide a **SINGLE MEDIAN** estimate for the LAND RATE per cent.
     - **Kazhakkoottam Specific**: Expect 12-18 Lakhs/cent. If > 25, assume commercial and adjust down for residential.
     - **Guardrails**: If Locality is 'Kowdiar', Rate > 25. If 'St. Andrews' < 1km from beach, Rate > 8.
     STEP 2: DETERMINE CONSTRUCTION COST (Rupees per Sqft) - If applicable
@@ -91,7 +91,7 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     - NRI Suitability, Geospatial features, Investment potential.
     RETURN STRICTLY VALID JSON ONLY (NO COMMENTS):
     {
-      "landRate": { "min": number, "max": number },
+      "medianLandRate": number,
       "constructionRate": number,
       "explanation": "Short textual summary of why this rate was chosen.",
       "recommendation": "One sentence advice.",
@@ -140,7 +140,7 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }],
-        temperature: 0.1, // Low temperature for consistency
+        temperature: 0.0, // Zero temperature for maximum consistency
         seed: 42,
       },
     });
@@ -152,19 +152,21 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
       data = JSON.parse(jsonString);
     } catch (e) {
       console.error("JSON Parse Error", text);
-      data = { landRate: { min: 0, max: 0 }, explanation: "Error parsing data." };
+      data = { medianLandRate: 0, explanation: "Error parsing data." };
     }
-    // --- DETERMINISTIC CALCULATION ENGINE ---
+    // --- DETERMINISTIC CALCULATION ENGINE V2 ---
     // 1. Inputs
     const plotArea = input.plotArea || 0;
     const builtArea = input.builtArea || 0;
     const isHouse = !isPlot && builtArea > 0;
-    // 2. Land Value Calculation
-    const landRateMin = Number(data.landRate?.min || 0);
-    const landRateMax = Number(data.landRate?.max || 0);
+    // 2. Land Value Calculation (Single Rate + Fixed Spread)
+    const medianRate = Number(data.medianLandRate || 0);
+    // Apply fixed +/- 10% spread for range
+    const landRateMin = medianRate * 0.90;
+    const landRateMax = medianRate * 1.10;
     const landValueMin = landRateMin * plotArea;
     const landValueMax = landRateMax * plotArea;
-    const landValueAvg = (landValueMin + landValueMax) / 2;
+    const landValueAvg = medianRate * plotArea;
     // 3. Structure Value Calculation (If House)
     let structureValue = 0;
     let constructionRate = 0;
@@ -196,7 +198,7 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     const finalMax = Number((totalMax * roadAdjFactor).toFixed(2));
     // Construct the Breakdown Object
     const breakdown = {
-      landRatePerCent: landRateMin, // Showing Min rate for reference
+      landRatePerCent: medianRate, // Showing Median rate for reference
       landTotal: Number(landValueAvg.toFixed(2)), // Showing Avg land value
       structureRatePerSqFt: constructionRate,
       structureTotalBeforeDepreciation: Number((builtArea * constructionRate / 100000).toFixed(2)),
