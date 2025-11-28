@@ -55,13 +55,8 @@ const Header: React.FC = () => {
           </div>
           {user ? (
             <div className="flex items-center space-x-3">
-              <div className="flex items-center space-x-2 bg-slate-700/50 px-3 py-1.5 rounded-full border border-slate-600">
-                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-lg">
-                  {user.email?.charAt(0).toUpperCase()}
-                </div>
-                <span className="text-sm text-slate-200 hidden lg:inline max-w-[120px] truncate">
-                  {user.email?.split('@')[0]}
-                </span>
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold shadow-lg border-2 border-white/20">
+                {user.email?.charAt(0).toUpperCase()}
               </div>
               <button
                 onClick={handleLogout}
