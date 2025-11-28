@@ -68,7 +68,7 @@ const LoadingProgress: React.FC<LoadingProgressProps> = ({ isLoading }) => {
                     <span className="text-sm font-bold text-blue-600">{Math.round(progress)}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                    <div
+                    <div 
                         className="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full transition-all duration-300 ease-out"
                         style={{ width: `${progress}%` }}>
                     </div>
