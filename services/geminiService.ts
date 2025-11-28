@@ -147,18 +147,24 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
              { 
                "id": number, 
                "title": "EXACT listing title from MARKET DATA CONTEXT sources above", 
-               "size": number (in cents), 
+               "size": number (in cents - MUST be within 50% of user's plot size), 
                "price": number (MUST be in Lakhs, NOT Rupees - divide by 100000 if needed), 
                "link": "MUST be valid HTTP/HTTPS URL from sources above, NO dummy links",
                "type": "Premium" | "Mid-Range" | "Budget"
              }
-          ]
-       }
-    }
+           ]
+        }
+     }
+    CRITICAL SIZE MATCHING RULE FOR COMPARABLES:
+    - If user's plot is 5 cents, comparables MUST be between 2.5-10 cents (within 50% range)
+    - If user's plot is 10 cents, comparables MUST be between 5-20 cents
+    - NEVER return listings that are 100x or more different (e.g., acres vs cents)
+    - If no similar-sized listings found in sources, return empty array []
     VALIDATION CHECKLIST BEFORE RETURNING:
     - [ ] All prices are in Lakhs (not Rupees)
     - [ ] All comparable links start with http:// or https://
     - [ ] Comparable titles match actual listings from sources
+    - [ ] Comparable sizes are within 50% of user's input size
     - [ ] If no valid comparables found, comparables array is []
     - [ ] Market depth listings have realistic details
   `;
