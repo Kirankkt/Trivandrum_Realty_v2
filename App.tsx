@@ -7,6 +7,7 @@ import GeospatialView from './components/GeospatialView';
 import TopLocations from './components/TopLocations';
 import DeveloperInsights from './components/DeveloperInsights';
 import NriView from './components/NriView';
+import LoadingProgress from './components/LoadingProgress';
 import { UserInput, PredictionResult } from './types';
 import { predictPrice } from './services/geminiService';
 const App: React.FC = () => {
@@ -42,15 +43,10 @@ const App: React.FC = () => {
           </div>
           {/* Right Column: Results & Tabs */}
           <div className="lg:col-span-8 space-y-6">
-            {loading && (
-              <div className="h-96 flex flex-col items-center justify-center bg-white rounded-xl shadow-sm border border-dashed border-gray-300 animate-pulse">
-                <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-                <p className="text-gray-500 font-medium">Analyzing Market Data...</p>
-              </div>
-            )}
+            <LoadingProgress isLoading={loading} />
             {!loading && !result && (
               <div className="h-96 flex flex-col items-center justify-center bg-white rounded-xl shadow-sm border border-dashed border-gray-300">
-                <svg className="w-16 h-16 text-gray-200 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0121 18.382V7.618a1 1 0 01-1.447-.894L15 7m0 13V7m0 0L9.553 4.553A1 1 0 008.447 4.553L3 7.236"></path></svg>
+                <svg className="w-16 h-16 text-gray-200 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 01-1.447-.894L15 7m0 13V7m0 0L9.553 4.553A1 1 0 008.447 4.553L3 7.236"></path></svg>
                 <p className="text-gray-500">Fill the form to get a property estimate.</p>
               </div>
             )}
