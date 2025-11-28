@@ -1,5 +1,4 @@
 import React from 'react';
-
 interface LocationProfile {
     id: number;
     name: string;
@@ -10,7 +9,6 @@ interface LocationProfile {
     outlook: 'Positive' | 'Stable' | 'Neutral';
     tags: string[];
 }
-
 const TOP_LOCATIONS: LocationProfile[] = [
     {
         id: 1,
@@ -113,7 +111,6 @@ const TOP_LOCATIONS: LocationProfile[] = [
         tags: ["Connectivity", "Strategic", "Busy"]
     }
 ];
-
 const TopLocations: React.FC = () => {
     return (
         <div className="space-y-6 animate-fade-in-up">
@@ -124,20 +121,19 @@ const TopLocations: React.FC = () => {
                     Data combined from market surveys, registration trends, and developer insights.
                 </p>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {TOP_LOCATIONS.map((loc) => (
                     <div key={loc.id} className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col">
                         <div className="p-6 flex-grow">
-                            <div className="flex justify-between items-start mb-2">
+                            <div className="flex flex-wrap items-center mb-2 gap-2">
                                 <h3 className="text-xl font-bold text-gray-800">{loc.name}</h3>
                                 {loc.outlook === 'Positive' ? (
-                                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium flex items-center">
+                                    <span className="bg-green-100 text-green-800 text-xs px-2.5 py-1 rounded-full font-medium flex items-center shrink-0 whitespace-nowrap">
                                         <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                                         High Growth
                                     </span>
                                 ) : (
-                                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium flex items-center">
+                                    <span className="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-full font-medium flex items-center shrink-0 whitespace-nowrap">
                                         <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
                                         Stable
                                     </span>
@@ -145,7 +141,6 @@ const TopLocations: React.FC = () => {
                             </div>
                             <p className="text-sm text-teal-600 font-semibold mb-3">{loc.tagline}</p>
                             <p className="text-gray-600 text-sm mb-4 leading-relaxed">{loc.description}</p>
-
                             <div className="flex flex-wrap gap-2 mb-4">
                                 {loc.tags.map((tag, idx) => (
                                     <span key={idx} className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-md">
@@ -154,7 +149,6 @@ const TopLocations: React.FC = () => {
                                 ))}
                             </div>
                         </div>
-
                         <div className="bg-gray-50 px-6 py-4 border-t border-gray-100">
                             <div className="flex justify-between items-center text-sm">
                                 <div>
@@ -173,5 +167,4 @@ const TopLocations: React.FC = () => {
         </div>
     );
 };
-
 export default TopLocations;
