@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { PredictionResult, DeveloperAnalysis } from '../types';
+import { PredictionResult } from '../types';
+import { formatCurrency } from '../utils/formatters';
 interface DeveloperInsightsProps {
     result: PredictionResult;
 }
@@ -8,27 +9,19 @@ const DeveloperInsights: React.FC<DeveloperInsightsProps> = ({ result }) => {
     const landValue = result.estimatedLandValue || 0;
     // State for ROI Calculator
     const [landCost, setLandCost] = useState<number>(landValue);
-    const [constructionRate, setConstructionRate] = useState<number>(3500); // Default premium
+    const [constructionRate, setConstructionRate] = useState<number>(3500);
     const [salePricePerVilla, setSalePricePerVilla] = useState<number>(analysis?.projectedSalePrice || 150);
     const [numVillas, setNumVillas] = useState<number>(analysis?.maxVillas || 1);
     // Derived Calculations
-    const villaSize = 2000; // Assumption
-    const totalConstructionCost = (numVillas * villaSize * constructionRate) / 100000; // In Lakhs
+    const villaSize = 2000;
+    const totalConstructionCost = (numVillas * villaSize * constructionRate) / 100000;
     const totalProjectCost = landCost + totalConstructionCost;
-    const totalRevenue = numVillas * salePricePerVilla; // Both in Lakhs
+    const totalRevenue = numVillas * salePricePerVilla;
     const netProfit = totalRevenue - totalProjectCost;
     const roi = totalProjectCost > 0 ? (netProfit / totalProjectCost) * 100 : 0;
-    // Helper function to format large numbers in Lakhs/Crores
-    const formatCurrency = (value: number) => {
-        if (value >= 100) {
-            return `₹${(value / 100).toFixed(2)} Cr`;
-        }
-        return `₹${value.toFixed(2)} L`;
-    };
     useEffect(() => {
         if (result.estimatedLandValue) setLandCost(result.estimatedLandValue);
         if (analysis?.projectedSalePrice) {
-            // Ensure the price is in Lakhs (if it's > 10000, it's likely in Rupees)
             const price = analysis.projectedSalePrice;
             setSalePricePerVilla(price > 10000 ? price / 100000 : price);
         }
@@ -54,7 +47,7 @@ const DeveloperInsights: React.FC<DeveloperInsightsProps> = ({ result }) => {
                                 type="number"
                                 value={landCost.toFixed(2)}
                                 onChange={(e) => setLandCost(Number(e.target.value))}
-                                className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500"
                             />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
@@ -121,31 +114,63 @@ const DeveloperInsights: React.FC<DeveloperInsightsProps> = ({ result }) => {
                 <div>
                     <h4 className="font-semibold text-gray-800 mb-4 uppercase tracking-wide text-sm flex items-center justify-between">
                         <span>Comparable Listings</span>
-                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Top 3 Matches</span>
+                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                            {analysis.comparables?.length || 0} Found
+                        </span>
                     </h4>
                     <div className="space-y-3">
-                        {analysis.comparables.length > 0 ? (
-                            analysis.comparables.map((comp, idx) => (
-                                <a
-                                    key={idx}
-                                    href={comp.link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block bg-white border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow group"
-                                >
+                        {analysis.comparables && analysis.comparables.length > 0 ? (
+                            analysis.comparables.slice(0, 3).map((comp, idx) => {
+                                const price = typeof comp.price === 'number' ? comp.price : 0;
+                                const normalizedPrice = price > 10000 ? price / 100000 : price;
+                                const hasValidLink = comp.link && comp.link.startsWith('http');
+                                const CardContent = () => (
                                     <div className="flex justify-between items-start">
-                                        <div>
-                                            <h5 className="font-medium text-gray-900 text-sm group-hover:text-indigo-600 line-clamp-1">{comp.title}</h5>
-                                            <p className="text-xs text-gray-500 mt-1">{comp.size} cents • {comp.type}</p>
+                                        <div className="flex-1">
+                                            <h5 className="font-medium text-gray-900 text-sm group-hover:text-indigo-600 line-clamp-2">
+                                                {comp.title || 'Property Listing'}
+                                            </h5>
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                {comp.size} cents
+                                                {comp.type && ` • ${comp.type}`}
+                                            </p>
+                                            {!hasValidLink && (
+                                                <span className="inline-block mt-1 text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded">
+                                                    ⚠ Link unavailable
+                                                </span>
+                                            )}
                                         </div>
-                                        <span className="bg-green-50 text-green-700 text-xs font-bold px-2 py-1 rounded">
-                                            ₹{comp.price} L
+                                        <span className="bg-green-50 text-green-700 text-xs font-bold px-2.5 py-1 rounded ml-2 shrink-0">
+                                            {formatCurrency(normalizedPrice)}
                                         </span>
                                     </div>
-                                </a>
-                            ))
+                                );
+                                return hasValidLink ? (
+                                    <a
+                                        key={idx}
+                                        href={comp.link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="block bg-white border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow group">
+                                        <CardContent />
+                                    </a>
+                                ) : (
+                                    <div
+                                        key={idx}
+                                        className="block bg-white border border-gray-200 rounded-lg p-3 opacity-75">
+                                        <CardContent />
+                                    </div>
+                                );
+                            })
                         ) : (
-                            <p className="text-sm text-gray-500 italic">No direct comparables found in the source data.</p>
+                            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+                                <p className="text-sm text-gray-600">
+                                    No comparable listings available for this area.
+                                </p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                    Price estimates are based on market benchmarks.
+                                </p>
+                            </div>
                         )}
                     </div>
                     <div className="mt-6 bg-yellow-50 border border-yellow-100 p-4 rounded-lg">
