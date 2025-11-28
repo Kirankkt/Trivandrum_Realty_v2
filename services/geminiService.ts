@@ -10,7 +10,7 @@ const fetchRealSources = async (locality: string): Promise<Source[]> => {
     return [];
   }
   try {
-    const query = `Land price per cent in ${locality} Trivandrum 2024 2025`;
+    const query = `property for sale ${locality} Trivandrum Kerala India site:99acres.com OR site:magicbricks.com OR site:housing.com OR site:olx.in`;
     const response = await fetch('https://google.serper.dev/search', {
       method: 'POST',
       headers: {
@@ -95,6 +95,10 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     3. If no valid comparables found in sources, return empty array []
     4. Market depth listings MUST be realistic extrapolations based on the provided sources
     5. NO hallucinated, synthetic, or dummy data allowed
+    6. **GEOGRAPHIC RESTRICTION**: ALL listings MUST be from Trivandrum/Thiruvananthapuram, Kerala ONLY
+       - REJECT any listings from Gujarat, Mumbai, Delhi, Bangalore, or other states/cities
+       - ONLY accept listings explicitly mentioning Trivandrum, Thiruvananthapuram, or Kerala localities
+       - If listing location is unclear or from wrong city, DO NOT include it
     RETURN STRICTLY VALID JSON ONLY (NO COMMENTS):
     {
       "medianLandRate": number (in Lakhs per cent),
@@ -152,9 +156,9 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
                "link": "MUST be valid HTTP/HTTPS URL from sources above, NO dummy links",
                "type": "Premium" | "Mid-Range" | "Budget"
              }
-           ]
-        }
-     }
+          ]
+       }
+    }
     CRITICAL SIZE MATCHING RULE FOR COMPARABLES:
     - If user's plot is 5 cents, comparables MUST be between 2.5-10 cents (within 50% range)
     - If user's plot is 10 cents, comparables MUST be between 5-20 cents
@@ -165,6 +169,7 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     - [ ] All comparable links start with http:// or https://
     - [ ] Comparable titles match actual listings from sources
     - [ ] Comparable sizes are within 50% of user's input size
+    - [ ] ALL listings are from Trivandrum/Kerala ONLY (no Gujarat, Mumbai, other states)
     - [ ] If no valid comparables found, comparables array is []
     - [ ] Market depth listings have realistic details
   `;
