@@ -89,10 +89,16 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     - Adjust based on "Premium" or "Standard" vibe of the locality.
     STEP 3: ANALYZE EXTRAS
     - NRI Suitability, Geospatial features, Investment potential.
+    CRITICAL DATA QUALITY RULES:
+    1. ALL prices MUST be in LAKHS only (never Rupees)
+    2. Comparables MUST have valid HTTP/HTTPS links from the MARKET DATA CONTEXT sources
+    3. If no valid comparables found in sources, return empty array []
+    4. Market depth listings MUST be realistic extrapolations based on the provided sources
+    5. NO hallucinated, synthetic, or dummy data allowed
     RETURN STRICTLY VALID JSON ONLY (NO COMMENTS):
     {
-      "medianLandRate": number,
-      "constructionRate": number,
+      "medianLandRate": number (in Lakhs per cent),
+      "constructionRate": number (in Rupees per sqft),
       "explanation": "Short textual summary of why this rate was chosen.",
       "recommendation": "One sentence advice.",
       "investment": {
@@ -118,21 +124,43 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
          "priceGradient": "string",
          "growthDrivers": ["string", "string"],
          "microMarkets": [
-            { "name": "string", "priceLevel": "High/Med/Low", "description": "string" }
+            { "name": "string (specific area/road name)", "priceLevel": "High/Med/Low", "description": "string" }
          ],
           "marketDepth": [
-            { "id": 1, "size": number, "price": number, "type": "Premium" | "Mid-Range" | "Budget", "latOffset": number, "lngOffset": number }
+            { 
+              "id": number, 
+              "title": "Actual property listing title from sources",
+              "size": number (in cents), 
+              "price": number (MUST be in Lakhs, NOT Rupees), 
+              "type": "Premium" | "Mid-Range" | "Budget", 
+              "link": "Valid HTTP URL from sources or empty string if unavailable",
+              "latOffset": number (small offset like 0.001 to 0.01), 
+              "lngOffset": number (small offset like 0.001 to 0.01)
+            }
           ]
        },
        "developerAnalysis": {
           "maxVillas": number,
-          "projectedSalePrice": number,
+          "projectedSalePrice": number (in Lakhs per villa),
           "demandForVillas": "High" | "Moderate" | "Low",
           "comparables": [
-             { "id": 1, "title": "string", "size": number, "price": number, "link": "string" }
+             { 
+               "id": number, 
+               "title": "EXACT listing title from MARKET DATA CONTEXT sources above", 
+               "size": number (in cents), 
+               "price": number (MUST be in Lakhs, NOT Rupees - divide by 100000 if needed), 
+               "link": "MUST be valid HTTP/HTTPS URL from sources above, NO dummy links",
+               "type": "Premium" | "Mid-Range" | "Budget"
+             }
           ]
        }
     }
+    VALIDATION CHECKLIST BEFORE RETURNING:
+    - [ ] All prices are in Lakhs (not Rupees)
+    - [ ] All comparable links start with http:// or https://
+    - [ ] Comparable titles match actual listings from sources
+    - [ ] If no valid comparables found, comparables array is []
+    - [ ] Market depth listings have realistic details
   `;
   try {
     const response = await ai.models.generateContent({
