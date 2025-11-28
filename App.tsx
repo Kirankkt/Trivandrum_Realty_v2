@@ -44,7 +44,7 @@ const App: React.FC = () => {
           <div className="lg:col-span-8 space-y-6">
             {loading && (
               <div className="h-96 flex flex-col items-center justify-center bg-white rounded-xl shadow-sm border border-dashed border-gray-300 animate-pulse">
-                <div className="w-16 h-16 border-4 border-teal-200 border-t-teal-600 rounded-full animate-spin mb-4"></div>
+                <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
                 <p className="text-gray-500 font-medium">Analyzing Market Data...</p>
               </div>
             )}
@@ -60,32 +60,27 @@ const App: React.FC = () => {
                 <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg mb-4 overflow-x-auto">
                   <button
                     onClick={() => setActiveTab('valuation')}
-                    className={`flex-1 min-w-[100px] py-2.5 text-sm font-medium rounded-md transition-all ${activeTab === 'valuation' ? 'bg-white text-teal-700 shadow' : 'text-gray-500 hover:text-gray-700'}`}
-                  >
+                    className={`flex-1 min-w-[100px] py-2.5 text-sm font-medium rounded-md transition-all ${activeTab === 'valuation' ? 'bg-white text-blue-700 shadow' : 'text-gray-500 hover:text-gray-700'}`}>
                     Valuation
                   </button>
                   <button
                     onClick={() => setActiveTab('nri')}
-                    className={`flex-1 min-w-[100px] py-2.5 text-sm font-medium rounded-md transition-all ${activeTab === 'nri' ? 'bg-white text-teal-700 shadow' : 'text-gray-500 hover:text-gray-700'}`}
-                  >
+                    className={`flex-1 min-w-[100px] py-2.5 text-sm font-medium rounded-md transition-all ${activeTab === 'nri' ? 'bg-white text-blue-700 shadow' : 'text-gray-500 hover:text-gray-700'}`}>
                     NRI Insights
                   </button>
                   <button
                     onClick={() => setActiveTab('geospatial')}
-                    className={`flex-1 min-w-[100px] py-2.5 text-sm font-medium rounded-md transition-all ${activeTab === 'geospatial' ? 'bg-white text-teal-700 shadow' : 'text-gray-500 hover:text-gray-700'}`}
-                  >
+                    className={`flex-1 min-w-[100px] py-2.5 text-sm font-medium rounded-md transition-all ${activeTab === 'geospatial' ? 'bg-white text-blue-700 shadow' : 'text-gray-500 hover:text-gray-700'}`}>
                     Geospatial
                   </button>
                   <button
                     onClick={() => setActiveTab('trends')}
-                    className={`flex-1 min-w-[100px] py-2.5 text-sm font-medium rounded-md transition-all ${activeTab === 'trends' ? 'bg-white text-teal-700 shadow' : 'text-gray-500 hover:text-gray-700'}`}
-                  >
+                    className={`flex-1 min-w-[100px] py-2.5 text-sm font-medium rounded-md transition-all ${activeTab === 'trends' ? 'bg-white text-blue-700 shadow' : 'text-gray-500 hover:text-gray-700'}`}>
                     Market Trends
                   </button>
                   <button
                     onClick={() => setActiveTab('historical')}
-                    className={`flex-1 min-w-[100px] py-2.5 text-sm font-medium rounded-md transition-all ${activeTab === 'historical' ? 'bg-white text-teal-700 shadow' : 'text-gray-500 hover:text-gray-700'}`}
-                  >
+                    className={`flex-1 min-w-[100px] py-2.5 text-sm font-medium rounded-md transition-all ${activeTab === 'historical' ? 'bg-white text-blue-700 shadow' : 'text-gray-500 hover:text-gray-700'}`}>
                     Analytics
                   </button>
                 </div>
@@ -118,7 +113,7 @@ const App: React.FC = () => {
           </div>
         </div>
       </main>
-      <footer className="bg-teal-900 text-teal-300 py-6 text-center text-sm">
+      <footer className="bg-slate-900 text-slate-400 py-6 text-center text-sm">
         <p>&copy; {new Date().getFullYear()} Trivandrum Realty AI. Data provided by Google Search Grounding.</p>
       </footer>
     </div>
