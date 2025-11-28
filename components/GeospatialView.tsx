@@ -27,6 +27,8 @@ const GeospatialView: React.FC<GeospatialViewProps> = ({ result, locality }) => 
                     comparables={result.developerAnalysis?.comparables || []}
                     marketDepth={result.geoSpatial?.marketDepth || []}
                     locality={locality}
+                    estimatedRate={result.breakdown?.landRatePerCent}
+                    plotArea={result.estimatedLandValue ? result.estimatedLandValue / (result.breakdown?.landRatePerCent || 1) : undefined}
                 />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -129,6 +131,3 @@ const GeospatialView: React.FC<GeospatialViewProps> = ({ result, locality }) => 
     );
 };
 export default GeospatialView;
-
-
-
