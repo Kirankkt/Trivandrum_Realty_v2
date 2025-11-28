@@ -114,9 +114,9 @@ const TOP_LOCATIONS: LocationProfile[] = [
 const TopLocations: React.FC = () => {
     return (
         <div className="space-y-6 animate-fade-in-up">
-            <div className="bg-gradient-to-r from-teal-600 to-teal-800 rounded-xl p-8 text-white shadow-lg">
+            <div className="bg-gradient-to-r from-blue-700 to-indigo-800 rounded-xl p-8 text-white shadow-xl">
                 <h2 className="text-3xl font-bold mb-2">Trivandrum Market Trends 2024</h2>
-                <p className="text-teal-100 max-w-2xl">
+                <p className="text-blue-100 max-w-2xl">
                     A curated analysis of the top 10 investment hotspots in the capital city.
                     Data combined from market surveys, registration trends, and developer insights.
                 </p>
@@ -139,7 +139,7 @@ const TopLocations: React.FC = () => {
                                     </span>
                                 )}
                             </div>
-                            <p className="text-sm text-teal-600 font-semibold mb-3">{loc.tagline}</p>
+                            <p className="text-sm text-blue-600 font-semibold mb-3">{loc.tagline}</p>
                             <p className="text-gray-600 text-sm mb-4 leading-relaxed">{loc.description}</p>
                             <div className="flex flex-wrap gap-2 mb-4">
                                 {loc.tags.map((tag, idx) => (
@@ -157,7 +157,7 @@ const TopLocations: React.FC = () => {
                                 </div>
                                 <div className="text-right">
                                     <p className="text-gray-500 text-xs uppercase tracking-wider">Rental Yield</p>
-                                    <p className="font-bold text-teal-600">{loc.rentalYield}</p>
+                                    <p className="font-bold text-blue-600">{loc.rentalYield}</p>
                                 </div>
                             </div>
                         </div>
