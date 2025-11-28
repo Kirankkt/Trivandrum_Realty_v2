@@ -27,7 +27,7 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result }) => {
         user_id: user.id,
         locality: 'Trivandrum', // Ideally passed as prop
         property_type: 'Property', // Defaulting
-        estimated_price: `${result.minPrice}-${result.maxPrice} Lakhs/cent`
+        estimated_price: `${result.minPrice}-${result.maxPrice} Lakhs`
       });
       if (error) throw error;
       setSaveStatus('saved');
@@ -38,16 +38,21 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result }) => {
       setIsSaving(false);
     }
   };
+  const formatPrice = (price: number) => {
+    if (price >= 100) {
+      return `₹${(price / 100).toFixed(2)} Cr`;
+    }
+    return `₹${price} Lakhs`;
+  };
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 mb-8 border border-teal-100 transform transition-all hover:scale-[1.01]">
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-gray-500 font-medium text-sm uppercase tracking-wider">Estimated Fair Value</h3>
+          <h3 className="text-gray-500 font-medium text-sm uppercase tracking-wider">Estimated Total Value</h3>
           <div className="flex items-baseline mt-1">
             <span className="text-4xl font-extrabold text-teal-700">
-              ₹{result.minPrice} - {result.maxPrice}
+              {formatPrice(result.minPrice)} - {formatPrice(result.maxPrice)}
             </span>
-            <span className="text-gray-600 ml-2 font-medium">Lakhs / cent</span>
           </div>
         </div>
         {/* Save Button */}
