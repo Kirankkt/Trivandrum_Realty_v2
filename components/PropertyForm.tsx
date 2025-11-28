@@ -53,7 +53,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
   return (
     <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
       <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center">
-        <svg className="w-5 h-5 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+        <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
         Property Details
       </h2>
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -65,8 +65,8 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
               type="button"
               onClick={() => setType(PropertyType.PROPERTY)}
               className={`py-2 px-4 text-sm font-medium rounded-lg border ${type === PropertyType.PROPERTY
-                  ? 'bg-teal-600 text-white border-teal-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                ? 'bg-blue-600 text-white border-blue-600'
+                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                 } transition-colors`}
             >
               🏠 House / Villa
@@ -75,10 +75,9 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
               type="button"
               onClick={() => setType(PropertyType.PLOT)}
               className={`py-2 px-4 text-sm font-medium rounded-lg border ${type === PropertyType.PLOT
-                  ? 'bg-teal-600 text-white border-teal-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                } transition-colors`}
-            >
+                ? 'bg-blue-600 text-white border-blue-600'
+                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                } transition-colors`}>
               📍 Plot / Land
             </button>
           </div>
@@ -89,7 +88,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
           <select
             value={locality}
             onChange={(e) => setLocality(e.target.value)}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 py-2 px-3 bg-gray-50 border"
+            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 bg-gray-50 border"
           >
             {LOCALITIES.map((loc) => (
               <option key={loc} value={loc}>{loc}</option>
@@ -101,9 +100,9 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
           <div className="flex justify-between mb-1">
             <label className="block text-sm font-medium text-gray-700">
               Distance to Beach
-              {isAutoSet && <span className="ml-2 text-xs text-teal-600 font-normal bg-teal-50 px-2 py-0.5 rounded-full border border-teal-100">Auto-set for {locality}</span>}
+              {isAutoSet && <span className="ml-2 text-xs text-blue-600 font-normal bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">Auto-set for {locality}</span>}
             </label>
-            <span className="text-sm font-semibold text-teal-700">{distance} km</span>
+            <span className="text-sm font-semibold text-blue-700">{distance} km</span>
           </div>
           <input
             type="range"
@@ -112,7 +111,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
             step="0.1"
             value={distance}
             onChange={(e) => handleDistanceChange(parseFloat(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-teal-600"
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
           />
           <div className="flex justify-between text-xs text-gray-400 mt-1">
             <span>Beachfront (Nearest Coast)</span>
@@ -132,7 +131,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
                 step="0.1"
                 value={plotArea}
                 onChange={(e) => setPlotArea(e.target.value)}
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 py-2 px-3 border bg-gray-50"
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border bg-gray-50"
                 required
               />
               {type === PropertyType.PLOT && Number(plotArea) < 5 && (
@@ -149,7 +148,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
                   type="number"
                   value={builtArea}
                   onChange={(e) => setBuiltArea(e.target.value)}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 py-2 px-3 border bg-gray-50"
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border bg-gray-50"
                   required
                 />
               </div>
@@ -162,7 +161,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
                 <select
                   value={bedrooms}
                   onChange={(e) => setBedrooms(Number(e.target.value))}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 py-2 px-3 border bg-gray-50"
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border bg-gray-50"
                 >
                   {[1, 2, 3, 4, 5, 6].map(n => <option key={n} value={n}>{n} BHK</option>)}
                 </select>
@@ -172,7 +171,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
                 <select
                   value={age}
                   onChange={(e) => setAge(e.target.value)}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 py-2 px-3 border bg-gray-50"
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border bg-gray-50"
                 >
                   <option>Brand New / Under Construction</option>
                   <option>Resale (&lt; 10 Years)</option>
@@ -186,7 +185,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
             <select
               value={roadWidth}
               onChange={(e) => setRoadWidth(e.target.value)}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 py-2 px-3 border bg-gray-50"
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border bg-gray-50"
             >
               <option>Wide / Lorry Access</option>
               <option>Car Access</option>
@@ -197,7 +196,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
         <button
           type="submit"
           disabled={isLoading}
-          className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all ${isLoading ? 'opacity-75 cursor-not-allowed' : ''
+          className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all ${isLoading ? 'opacity-75 cursor-not-allowed' : ''
             }`}
         >
           {isLoading ? 'Analyzing...' : 'Get Precise Estimate'}
