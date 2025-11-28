@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { Comparable, GeospatialAnalysis } from '../types';
+import { formatCurrency } from '../utils/formatters';
 // Custom Icons
 const createIcon = (color: string, type: 'house' | 'plot') => {
     const emoji = type === 'house' ? '🏠' : '📍';
@@ -24,6 +25,8 @@ interface InteractiveMapProps {
     comparables: Comparable[];
     marketDepth?: GeospatialAnalysis['marketDepth'];
     locality: string;
+    estimatedRate?: number;
+    plotArea?: number;
 }
 // Component to update map center when locality changes
 const RecenterMap: React.FC<{ center: [number, number] }> = ({ center }) => {
@@ -33,7 +36,7 @@ const RecenterMap: React.FC<{ center: [number, number] }> = ({ center }) => {
     }, [center, map]);
     return null;
 };
-// Approximate coordinates for Trivandrum localities (Fallback)
+// Approximate coordinates for Trivandrum localities
 const LOCALITY_COORDS: Record<string, [number, number]> = {
     'Trivandrum': [8.5241, 76.9366],
     'Kowdiar': [8.5241, 76.9566],
@@ -112,9 +115,8 @@ const LOCALITY_COORDS: Record<string, [number, number]> = {
     'Shangumugham': [8.4800, 76.9100],
     'Vellayani': [8.4300, 76.9900]
 };
-const InteractiveMap: React.FC<InteractiveMapProps> = ({ comparables, marketDepth, locality }) => {
+const InteractiveMap: React.FC<InteractiveMapProps> = ({ comparables, marketDepth, locality, estimatedRate, plotArea }) => {
     const center = LOCALITY_COORDS[locality] || LOCALITY_COORDS['Trivandrum'];
-    // Helper to get random offset for demo markers
     const getOffset = () => (Math.random() - 0.5) * 0.015;
     return (
         <div className="h-[500px] w-full rounded-xl overflow-hidden shadow-lg border border-gray-200 z-0 relative">
@@ -124,61 +126,100 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ comparables, marketDept
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
                 <RecenterMap center={center} />
-                {/* Main Location Marker */}
+                {/* Main Location Marker with Details */}
                 <Marker position={center} icon={Icons.Selected}>
                     <Popup>
-                        <div className="text-center">
-                            <h3 className="font-bold text-indigo-700">{locality}</h3>
-                            <p className="text-xs text-gray-500">Selected Location</p>
+                        <div className="min-w-[180px]">
+                            <h3 className="font-bold text-indigo-700 mb-2">{locality}</h3>
+                            <div className="space-y-1 text-xs">
+                                {estimatedRate && (
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-500">Land Rate:</span>
+                                        <span className="font-semibold text-gray-800">{formatCurrency(estimatedRate)}/cent</span>
+                                    </div>
+                                )}
+                                {plotArea && (
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-500">Plot Size:</span>
+                                        <span className="font-semibold text-gray-800">{plotArea} cents</span>
+                                    </div>
+                                )}
+                                <p className="text-indigo-600 font-medium pt-1 border-t mt-1">📍 Your Selected Location</p>
+                            </div>
                         </div>
                     </Popup>
                 </Marker>
-                {/* Comparable Markers */}
-                {comparables.map((comp) => (
-                    <Marker
-                        key={`comp-${comp.id}`}
-                        position={[center[0] + getOffset(), center[1] + getOffset()]}
-                        icon={Icons.Plot}
-                    >
-                        <Popup>
-                            <div className="min-w-[200px]">
-                                <h4 className="font-bold text-gray-800 text-sm mb-1">{comp.title}</h4>
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full">
-                                        {comp.size} cents
-                                    </span>
-                                    <span className="font-bold text-blue-700">₹{comp.price} L</span>
-                                </div>
-                                <a
-                                    href={comp.link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block text-center w-full bg-blue-600 text-white text-xs py-1.5 rounded hover:bg-blue-700 transition-colors"
-                                >
-                                    View Listing
-                                </a>
-                            </div>
-                        </Popup>
-                    </Marker>
-                ))}
-                {/* Market Depth Markers */}
-                {marketDepth?.map((item) => {
-                    let icon = Icons.MidRange;
-                    if (item.type === 'Premium') icon = Icons.Premium;
-                    if (item.type === 'Budget') icon = Icons.Budget;
-                    const lat = center[0] + (item.latOffset || getOffset());
-                    const lng = center[1] + (item.lngOffset || getOffset());
+                {/* Comparable Markers - Only Valid Links */}
+                {comparables.filter(comp => comp.link && comp.link.startsWith('http')).map((comp) => {
+                    const price = typeof comp.price === 'number' ? comp.price : 0;
+                    const normalizedPrice = price > 10000 ? price / 100000 : price;
                     return (
-                        <Marker key={`depth-${item.id}`} position={[lat, lng]} icon={icon}>
+                        <Marker
+                            key={`comp-${comp.id}`}
+                            position={[center[0] + getOffset(), center[1] + getOffset()]}
+                            icon={Icons.Plot}>
                             <Popup>
-                                <div className="text-center">
-                                    <h4 className="font-bold text-gray-800 text-sm">{item.type} Listing</h4>
-                                    <p className="text-xs text-gray-500">{item.size} cents @ ₹{item.price} L</p>
+                                <div className="min-w-[200px]">
+                                    <h4 className="font-bold text-gray-800 text-sm mb-2 line-clamp-2">{comp.title || 'Property Listing'}</h4>
+                                    <div className="flex justify-between items-center mb-3">
+                                        <span className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full">
+                                            {comp.size} cents
+                                        </span>
+                                        <span className="font-bold text-blue-700">{formatCurrency(normalizedPrice)}</span>
+                                    </div>
+                                    <a
+                                        href={comp.link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="block text-center w-full bg-blue-600 text-white text-xs py- 1.5 rounded hover:bg-blue-700 transition-colors">
+                                        View Listing
+                                    </a>
                                 </div>
                             </Popup>
                         </Marker>
                     );
                 })}
+                {/* Market Depth Markers */}
+                {marketDepth?.map((item) => {
+                    let icon = Icons.MidRange;
+                    if (item.type === 'Premium') icon = Icons.Premium;
+                    if (item.type === 'Budget') icon = Icons.Budget;
+                    const lat = center[0] + ((item as any).latOffset || getOffset());
+                    const lng = center[1] + ((item as any).lngOffset || getOffset());
+                    const price = typeof item.price === 'number' ? item.price : 0;
+                    const normalizedPrice = price > 10000 ? price / 100000 : price;
+                    const title = (item as any).title || `${item.type} Listing`;
+                    const link = (item as any).link;
+                    return (
+                        <Marker key={`depth-${item.id}`} position={[lat, lng]} icon={icon}>
+                            <Popup>
+                                <div className="min-w-[180px]">
+                                    <h4 className="font-bold text-gray-800 text-sm mb-1 line-clamp-2">{title}</h4>
+                                    <div className="flex justify-between items-center text-xs mb-2">
+                                        <span className="text-gray-500">{item.size} cents</span>
+                                        <span className="font-bold text-gray-800">{formatCurrency(normalizedPrice)}</span>
+                                    </div>
+                                    <span className={`inline-block w-full text-center text-xs px-2 py-0.5 rounded ${item.type === 'Premium' ? 'bg-red-100 text-red-700' :
+                                        item.type === 'Budget' ? 'bg-green-100 text-green-700' :
+                                            'bg-yellow-100 text-yellow-700'
+                                        }`}>
+                                        {item.type}
+                                    </span>
+                                    {link && link.startsWith('http') && (
+                                        <a
+                                            href={link}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="block text-center w-full bg-gray-600 text-white text-xs py-1 rounded hover:bg-gray-700 transition-colors mt-2">
+                                            View Details
+                                        </a>
+                                    )}
+                                </div>
+                            </Popup>
+                        </Marker>)
+                        ;
+                })
+                }
             </MapContainer>
             {/* Legend Overlay */}
             <div className="absolute bottom-4 left-4 bg-white p-3 rounded-lg shadow-md z-[1000] text-xs border border-gray-200">
