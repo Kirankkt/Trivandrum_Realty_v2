@@ -39,29 +39,33 @@ const Header: React.FC = () => {
     await supabase.auth.signOut();
   };
   return (
-    <header className="bg-teal-800 text-white shadow-lg">
+    <header className="bg-gradient-to-r from-slate-800 to-slate-900 text-white shadow-xl">
       <div className="max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
         <div className="text-center md:text-left mb-4 md:mb-0">
           <h1 className="text-3xl font-bold tracking-tight">{APP_TITLE}</h1>
-          <p className="text-teal-200 mt-1 text-sm">{APP_DESC}</p>
+          <p className="text-slate-300 mt-1 text-sm">{APP_DESC}</p>
         </div>
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2 bg-teal-900/50 py-2 px-4 rounded-full text-xs font-medium border border-teal-600 backdrop-blur-sm">
+          <div className="flex items-center space-x-2 bg-slate-700/50 py-2 px-4 rounded-full text-xs font-medium border border-slate-600 backdrop-blur-sm">
             <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
             </span>
             <span>Live Market Data</span>
           </div>
           {user ? (
             <div className="flex items-center space-x-3">
-              <span className="text-sm text-teal-100 hidden sm:inline">
-                {user.email}
-              </span>
+              <div className="flex items-center space-x-2 bg-slate-700/50 px-3 py-1.5 rounded-full border border-slate-600">
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-lg">
+                  {user.email?.charAt(0).toUpperCase()}
+                </div>
+                <span className="text-sm text-slate-200 hidden lg:inline max-w-[120px] truncate">
+                  {user.email?.split('@')[0]}
+                </span>
+              </div>
               <button
                 onClick={handleLogout}
-                className="bg-teal-700 hover:bg-teal-600 text-white text-xs font-bold py-2 px-4 rounded transition-colors border border-teal-600"
-              >
+                className="bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold py-2 px-4 rounded-lg transition-all border border-slate-600 hover:border-slate-500">
                 Sign Out
               </button>
             </div>
@@ -93,8 +97,7 @@ const Header: React.FC = () => {
           ) : (
             <button
               onClick={() => setShowLogin(true)}
-              className="bg-white text-teal-800 hover:bg-teal-50 text-xs font-bold py-2 px-4 rounded transition-colors shadow-sm"
-            >
+              className="bg-white text-slate-800 hover:bg-slate-50 text-sm font-semibold py-2 px-5 rounded-lg transition-all shadow-md hover:shadow-lg">
               Sign In
             </button>
           )}
