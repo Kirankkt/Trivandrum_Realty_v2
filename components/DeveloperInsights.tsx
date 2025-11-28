@@ -15,12 +15,23 @@ const DeveloperInsights: React.FC<DeveloperInsightsProps> = ({ result }) => {
     const villaSize = 2000; // Assumption
     const totalConstructionCost = (numVillas * villaSize * constructionRate) / 100000; // In Lakhs
     const totalProjectCost = landCost + totalConstructionCost;
-    const totalRevenue = numVillas * salePricePerVilla;
+    const totalRevenue = numVillas * salePricePerVilla; // Both in Lakhs
     const netProfit = totalRevenue - totalProjectCost;
     const roi = totalProjectCost > 0 ? (netProfit / totalProjectCost) * 100 : 0;
+    // Helper function to format large numbers in Lakhs/Crores
+    const formatCurrency = (value: number) => {
+        if (value >= 100) {
+            return `₹${(value / 100).toFixed(2)} Cr`;
+        }
+        return `₹${value.toFixed(2)} L`;
+    };
     useEffect(() => {
         if (result.estimatedLandValue) setLandCost(result.estimatedLandValue);
-        if (analysis?.projectedSalePrice) setSalePricePerVilla(analysis.projectedSalePrice);
+        if (analysis?.projectedSalePrice) {
+            // Ensure the price is in Lakhs (if it's > 10000, it's likely in Rupees)
+            const price = analysis.projectedSalePrice;
+            setSalePricePerVilla(price > 10000 ? price / 100000 : price);
+        }
         if (analysis?.maxVillas) setNumVillas(analysis.maxVillas);
     }, [result, analysis]);
     if (!analysis) return null;
@@ -41,7 +52,7 @@ const DeveloperInsights: React.FC<DeveloperInsightsProps> = ({ result }) => {
                             <label className="block text-xs font-medium text-gray-500 mb-1">Land Cost (Lakhs)</label>
                             <input
                                 type="number"
-                                value={landCost}
+                                value={landCost.toFixed(2)}
                                 onChange={(e) => setLandCost(Number(e.target.value))}
                                 className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                             />
@@ -70,7 +81,8 @@ const DeveloperInsights: React.FC<DeveloperInsightsProps> = ({ result }) => {
                             <label className="block text-xs font-medium text-gray-500 mb-1">Sale Price / Villa (Lakhs)</label>
                             <input
                                 type="number"
-                                value={salePricePerVilla}
+                                step="0.01"
+                                value={salePricePerVilla.toFixed(2)}
                                 onChange={(e) => setSalePricePerVilla(Number(e.target.value))}
                                 className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500"
                             />
@@ -79,16 +91,16 @@ const DeveloperInsights: React.FC<DeveloperInsightsProps> = ({ result }) => {
                     <div className="bg-white rounded-lg p-4 shadow-sm">
                         <div className="flex justify-between items-center mb-2">
                             <span className="text-gray-600 text-sm">Total Project Cost:</span>
-                            <span className="font-medium">₹{totalProjectCost.toFixed(2)} L</span>
+                            <span className="font-medium">{formatCurrency(totalProjectCost)}</span>
                         </div>
                         <div className="flex justify-between items-center mb-2">
                             <span className="text-gray-600 text-sm">Total Revenue:</span>
-                            <span className="font-medium">₹{totalRevenue.toFixed(2)} L</span>
+                            <span className="font-medium">{formatCurrency(totalRevenue)}</span>
                         </div>
                         <div className="border-t border-gray-100 pt-2 mt-2 flex justify-between items-center">
                             <span className="font-bold text-gray-800">Net Profit:</span>
                             <span className={`font-bold ${netProfit > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                ₹{netProfit.toFixed(2)} L
+                                {formatCurrency(netProfit)}
                             </span>
                         </div>
                         <div className="mt-3">
@@ -99,8 +111,8 @@ const DeveloperInsights: React.FC<DeveloperInsightsProps> = ({ result }) => {
                             <div className="w-full bg-gray-200 rounded-full h-2.5">
                                 <div
                                     className={`h-2.5 rounded-full ${roi > 20 ? 'bg-green-500' : roi > 0 ? 'bg-yellow-400' : 'bg-red-500'}`}
-                                    style={{ width: `${Math.min(Math.max(roi, 0), 100)}%` }}
-                                ></div>
+                                    style={{ width: `${Math.min(Math.max(roi, 0), 100)}%` }}>
+                                </div>
                             </div>
                         </div>
                     </div>
