@@ -4,27 +4,33 @@ import { supabase } from '../services/supabaseClient';
 import { User } from '@supabase/supabase-js';
 import { formatCurrency } from '../utils/formatters';
 import LeadCaptureModal from './LeadCaptureModal';
+
 interface PriceDisplayProps {
   result: PredictionResult | null;
   input: UserInput | null;
 }
+
 const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
   const [showSources, setShowSources] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saved' | 'error'>('idle');
   const [showLeadModal, setShowLeadModal] = useState(false);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });
   }, []);
+
   if (!result) return null;
+
   const handleSave = async () => {
     if (!user) {
       alert("Please Sign In to save estimates!");
       return;
     }
+
     setIsSaving(true);
     try {
       // Format property details string
@@ -34,15 +40,18 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
       } else if (input?.plotArea) {
         propertyDetails = `${input.plotArea} cents`;
       }
+
       // Format price with formatCurrency utility
       const formattedMin = formatCurrency(result.minPrice);
       const formattedMax = formatCurrency(result.maxPrice);
+
       const { error } = await supabase.from('saved_estimates').insert({
         user_id: user.id,
         locality: input?.locality || 'Trivandrum',
         property_type: propertyDetails,
         estimated_price: `${formattedMin}-${formattedMax}`
       });
+
       if (error) throw error;
       setSaveStatus('saved');
       setTimeout(() => setSaveStatus('idle'), 3000); // Reset after 3s
@@ -53,6 +62,7 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
       setIsSaving(false);
     }
   };
+
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 mb-8 border border-teal-100 transform transition-all hover:scale-[1.01]">
       <div className="flex justify-between items-start mb-4">
@@ -66,6 +76,7 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
             </span>
           </div>
         </div>
+
         {/* Save Button */}
         <button
           onClick={handleSave}
@@ -90,6 +101,7 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
           )}
         </button>
       </div>
+
       {/* Contact Agent Button */}
       <div className="mb-6">
         <button
@@ -103,6 +115,48 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
         </button>
         <p className="text-xs text-gray-500 text-center mt-2">Get expert guidance for buying or selling in {input?.locality}</p>
       </div>
+
+      {/* Confidence Badge */}
+      {result.confidence && (
+        <div className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
+                {[...Array(3)].map((_, i) => (
+                  <svg
+                    key={i}
+                    className={`w-5 h-5 ${i < (result.confidence.level === 'High' ? 3 : result.confidence.level === 'Medium' ? 2 : 1) ? 'text-yellow-400' : 'text-gray-300'}`}
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-800">
+                  Confidence: {result.confidence.level}
+                </p>
+                <p className="text-xs text-gray-600">
+                  {result.confidence.sampleSize} source{result.confidence.sampleSize !== 1 ? 's' : ''}
+                  {result.confidence.lastUpdated && result.confidence.lastUpdated !== 'Unknown' &&
+                    ` • Last updated: ${new Date(result.confidence.lastUpdated).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}`
+                  }
+                </p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold text-blue-600">{result.confidence.score}%</p>
+            </div>
+          </div>
+          {result.confidence.level === 'Low' && (
+            <p className="mt-2 text-xs text-blue-700 bg-blue-100/50 rounded px-2 py-1">
+              ℹ️ Limited data for this area - estimate will improve as more searches are conducted
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Breakdown */}
       {result.breakdown && (
         <div className="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-100">
@@ -119,6 +173,7 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
               <span className="text-gray-600">Land Value (Total):</span>
               <span className="font-medium text-teal-700">₹{Number(result.breakdown.landTotal || 0).toFixed(2)} Lakhs</span>
             </div>
+
             {Number(result.breakdown.finalStructureValue) > 0 && (
               <>
                 <div className="flex justify-between items-center pb-2 border-b border-gray-200 border-dashed">
@@ -135,6 +190,7 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
                 </div>
               </>
             )}
+
             <div className="flex justify-between items-center pt-1">
               <span className="text-gray-600">Road Access Adj:</span>
               <span className={`font-bold ${result.breakdown.roadAccessAdjustment.includes('+') ? 'text-green-600' : 'text-gray-500'}`}>
@@ -144,14 +200,17 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
           </div>
         </div>
       )}
+
       <div className="mb-6">
         <h4 className="font-semibold text-gray-800 mb-2">AI Analysis</h4>
         <p className="text-gray-600 leading-relaxed text-sm">{result.explanation}</p>
       </div>
+
       <div className="mb-6 bg-teal-50 rounded-lg p-4 border border-teal-100">
         <h4 className="font-semibold text-teal-800 mb-1">Recommendation</h4>
         <p className="text-teal-700 text-sm italic">"{result.recommendation}"</p>
       </div>
+
       {result.sources.length > 0 && (
         <div className="mt-4 pt-4 border-t border-gray-100">
           <button
@@ -182,6 +241,7 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
           )}
         </div>
       )}
+
       {/* Lead Capture Modal */}
       <LeadCaptureModal
         isOpen={showLeadModal}
@@ -191,4 +251,6 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
     </div>
   );
 };
+
+
 export default PriceDisplay;
