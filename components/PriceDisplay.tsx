@@ -67,12 +67,12 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 mb-8 border border-teal-100 transform transition-all hover:scale-[1.01]">
-      <div className="flex justify-between items-start mb-4">
+    <div className="glass-premium rounded-2xl shadow-depth p-8 mb-8 border-2 border-pink-500/30 card-3d">
+      <div className="flex justify-between items-start mb-6">
         <div>
-          <h3 className="text-gray-500 font-medium text-sm uppercase tracking-wider">Estimated Total Value</h3>
+          <h3 className="text-white/60 font-semibold text-sm uppercase tracking-wider mb-2">Estimated Total Value</h3>
           <div className="flex items-baseline mt-1">
-            <span className="text-4xl font-extrabold text-teal-700">
+            <span className="text-5xl font-extrabold gradient-text">
               {result.minPrice >= 100 ? `₹${(result.minPrice / 100).toFixed(2)} Cr` : `₹${result.minPrice} Lakhs`}
               -
               {result.maxPrice >= 100 ? `₹${(result.maxPrice / 100).toFixed(2)} Cr` : `₹${result.maxPrice} Lakhs`}
