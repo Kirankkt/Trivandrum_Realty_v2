@@ -211,9 +211,6 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
          "marketSentiment": "string"
       },
        "geoSpatial": {
-          "terrain": "string",
-          "neighborhoodVibe": "string",
-          "priceGradient": "string",
           "growthDrivers": ["string", "string"],
           "microMarkets": [
              { "name": "string (specific area/road name)", "priceLevel": "High/Med/Low", "description": "string" }
@@ -248,7 +245,7 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
         }
      }
     
-    NOTE: nriMetrics is calculated separately using GPS data. Include geoSpatial and developerAnalysis.
+    NOTE: nriMetrics is calculated locally using GPS data. Do NOT include terrain, neighborhoodVibe, or priceGradient - these are deprecated.
     CRITICAL SIZE MATCHING RULE FOR COMPARABLES:
     - If user's plot is 5 cents, comparables MUST be between 2.5-10 cents (within 50% range)
     - If user's plot is 10 cents, comparables MUST be between 5-20 cents

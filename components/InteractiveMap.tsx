@@ -1,26 +1,50 @@
-import React, { useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import React, { useState } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap, LayerGroup, Circle } from 'react-leaflet';
+import MarkerClusterGroup from 'react-leaflet-cluster';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { Comparable, GeospatialAnalysis } from '../types';
 import { formatCurrency } from '../utils/formatters';
-// Custom Icons
-const createIcon = (color: string, type: 'house' | 'plot') => {
-    const emoji = type === 'house' ? '🏠' : '📍';
+import { LOCALITY_COORDS, LANDMARKS, TOP_SCHOOLS, MAJOR_HOSPITALS } from '../constants';
+
+// Custom Icons - Professional styling
+const createMarkerIcon = (color: string, emoji: string, size: number = 36) => {
     return L.divIcon({
         className: 'custom-marker',
-        html: `<div style="background-color: ${color}; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3); font-size: 16px;">${emoji}</div>`,
-        iconSize: [30, 30],
-        iconAnchor: [15, 15]
+        html: `
+      <div style="
+        background: ${color};
+        width: ${size}px;
+        height: ${size}px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid white;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+        font-size: ${size * 0.5}px;
+        cursor: pointer;
+        transition: transform 0.2s;
+      " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">${emoji}</div>
+    `,
+        iconSize: [size, size],
+        iconAnchor: [size / 2, size / 2]
     });
 };
+
 const Icons = {
-    Premium: createIcon('#ef4444', 'house'), // Red
-    MidRange: createIcon('#eab308', 'house'), // Yellow
-    Budget: createIcon('#22c55e', 'house'), // Green
-    Plot: createIcon('#3b82f6', 'plot'), // Blue
-    Selected: createIcon('#6366f1', 'plot') // Indigo
+    Selected: createMarkerIcon('#6366f1', '🏘️', 42), // Indigo - User's location
+    Property: createMarkerIcon('#3b82f6', '🏠', 32), // Blue - Properties
+    School: createMarkerIcon('#8b5cf6', '🏫', 28), // Purple
+    Hospital: createMarkerIcon('#ef4444', '🏥', 28), // Red
+    Airport: createMarkerIcon('#0ea5e9', '✈️', 32), // Sky blue
+    Mall: createMarkerIcon('#ec4899', '🛍️', 28), // Pink
+    Techpark: createMarkerIcon('#10b981', '💼', 28), // Green
+    Premium: createMarkerIcon('#dc2626', '💎', 30), // Dark red
+    MidRange: createMarkerIcon('#f59e0b', '🏘️', 28), // Amber
+    Budget: createMarkerIcon('#16a34a', '🏡', 28), // Green
 };
+
 interface InteractiveMapProps {
     comparables: Comparable[];
     marketDepth?: GeospatialAnalysis['marketDepth'];
@@ -28,211 +52,400 @@ interface InteractiveMapProps {
     estimatedRate?: number;
     plotArea?: number;
 }
-// Component to update map center when locality changes
-const RecenterMap: React.FC<{ center: [number, number] }> = ({ center }) => {
-    const map = useMap();
-    useEffect(() => {
-        map.setView(center, 14);
-    }, [center, map]);
-    return null;
-};
-// Approximate coordinates for Trivandrum localities
-const LOCALITY_COORDS: Record<string, [number, number]> = {
-    'Trivandrum': [8.5241, 76.9366],
-    'Kowdiar': [8.5241, 76.9566],
-    'Kazhakkoottam': [8.5686, 76.8731],
-    'Technopark Area': [8.5581, 76.8816],
-    'Veli': [8.5179, 76.8924],
-    'St. Andrews': [8.5960, 76.8640],
-    'Kovalam': [8.4004, 76.9787],
-    'Varkala': [8.7379, 76.7163],
-    'Sasthamangalam': [8.5126, 76.9678],
-    'Pattom': [8.5284, 76.9426],
-    'Peroorkada': [8.5432, 76.9698],
-    'Vattiyoorkavu': [8.5350, 76.9850],
-    'Mannanthala': [8.5680, 76.9550],
-    'Sreekaryam': [8.5480, 76.9250],
-    'Ulloor': [8.5400, 76.9300],
-    'Medical College': [8.5230, 76.9280],
-    'Pettah': [8.5000, 76.9300],
-    'Chackai': [8.4950, 76.9200],
-    'Enchakkal': [8.4900, 76.9300],
-    'East Fort': [8.4850, 76.9450],
-    'Thampanoor': [8.4900, 76.9500],
-    'Vazhuthacaud': [8.5050, 76.9600],
-    'Jagathy': [8.5000, 76.9650],
-    'Poojappura': [8.4950, 76.9750],
-    'Thirumala': [8.5050, 76.9900],
-    'Nemom': [8.4600, 77.0000],
-    'Pappanamcode': [8.4750, 76.9850],
-    'Karamana': [8.4850, 76.9700],
-    'Attukal': [8.4700, 76.9500],
-    'Manacaud': [8.4750, 76.9500],
-    'Thiruvallam': [8.4500, 76.9600],
-    'Vizhinjam': [8.3800, 76.9900],
-    'Balaramapuram': [8.4200, 77.0300],
-    'Neyyattinkara': [8.4000, 77.0800],
-    'Pothencode': [8.6100, 76.9000],
-    'Mangalapuram': [8.6000, 76.8800],
-    'Attingal': [8.6900, 76.8100],
-    'Kilimanoor': [8.7700, 76.8800],
-    'Nedumangad': [8.6000, 77.0000],
-    'Venjaramoodu': [8.6700, 76.9500],
-    'Malayinkeezhu': [8.5200, 77.0500],
-    'Peyad': [8.5300, 77.0300],
-    'Ooruttambalam': [8.4800, 77.0500],
-    'Pravachambalam': [8.4500, 77.0200],
-    'Pallipuram': [8.5800, 76.8700],
-    'Technocity': [8.5900, 76.8700],
-    'Kaniyapuram': [8.5800, 76.8600],
-    'Menamkulam': [8.5700, 76.8700],
-    'Thumba': [8.5500, 76.8700],
-    'Akkulam': [8.5300, 76.9000],
-    'Anayara': [8.5100, 76.9100],
-    'Kumarapuram': [8.5200, 76.9300],
-    'Kannammoola': [8.5100, 76.9300],
-    'Pangappara': [8.5600, 76.9100],
-    'Powdikonam': [8.5800, 76.9300],
-    'Chenkottukonam': [8.5900, 76.9200],
-    'Chanthavila': [8.6000, 76.9100],
-    'Karyavattom': [8.5600, 76.8900],
-    'Pulayanarkotta': [8.5300, 76.9100],
-    'Kuravankonam': [8.5300, 76.9500],
-    'Nalanchira': [8.5500, 76.9400],
-    'Paruthippara': [8.5550, 76.9450],
-    'Muttada': [8.5400, 76.9600],
-    'Ambalamukku': [8.5350, 76.9550],
-    'Kudappanakunnu': [8.5500, 76.9700],
-    'Maruthankuzhy': [8.5150, 76.9750],
-    'Vellayambalam': [8.5100, 76.9600],
-    'Palayam': [8.5050, 76.9500],
-    'Statue': [8.5000, 76.9500],
-    'Vanchiyoor': [8.4950, 76.9400],
-    'General Hospital': [8.5000, 76.9400],
-    'Pattoor': [8.5000, 76.9350],
-    'Ambalathara': [8.4600, 76.9500],
-    'Beemapally': [8.4700, 76.9300],
-    'Shangumugham': [8.4800, 76.9100],
-    'Vellayani': [8.4300, 76.9900]
-};
-const InteractiveMap: React.FC<InteractiveMapProps> = ({ comparables, marketDepth, locality, estimatedRate, plotArea }) => {
-    const center = LOCALITY_COORDS[locality] || LOCALITY_COORDS['Trivandrum'];
-    const getOffset = () => (Math.random() - 0.5) * 0.015;
+
+interface LayerToggles {
+    schools: boolean;
+    hospitals: boolean;
+    landmarks: boolean;
+    properties: boolean;
+    heatCircles: boolean;
+}
+
+interface Filters {
+    priceMin: number;
+    priceMax: number;
+    distanceRadius: number; // km
+}
+
+const InteractiveMap: React.FC<InteractiveMapProps> = ({
+    comparables,
+    marketDepth,
+    locality,
+    estimatedRate,
+    plotArea
+}) => {
+    // Get center coordinates from our GPS data
+    const localityCoords = LOCALITY_COORDS[locality];
+    const center: [number, number] = localityCoords
+        ? [localityCoords.lat, localityCoords.lng]
+        : [8.5241, 76.9366]; // Trivandrum fallback
+
+    // State for layer toggles
+    const [layers, setLayers] = useState<LayerToggles>({
+        schools: false,
+        hospitals: false,
+        landmarks: false,
+        properties: true,
+        heatCircles: false
+    });
+
+    const [filters, setFilters] = useState<Filters>({
+        priceMin: 0,
+        priceMax: 100, // Lakhs
+        distanceRadius: 5 // km
+    });
+
+    // Toggle layer visibility
+    const toggleLayer = (layer: keyof LayerToggles) => {
+        setLayers(prev => ({ ...prev, [layer]: !prev[layer] }));
+    };
+
+    // Filter properties by price
+    const filterProperties = (items: any[]) => {
+        return items.filter(item => {
+            const price = typeof item.price === 'number' ? item.price : 0;
+            const normalizedPrice = price > 10000 ? price / 100000 : price;
+            return normalizedPrice >= filters.priceMin && normalizedPrice <= filters.priceMax;
+        });
+    };
+
     return (
-        <div className="h-[500px] w-full rounded-xl overflow-hidden shadow-lg border border-gray-200 z-0 relative">
-            <MapContainer center={center} zoom={14} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <RecenterMap center={center} />
-                {/* Main Location Marker with Details */}
-                <Marker position={center} icon={Icons.Selected}>
-                    <Popup>
-                        <div className="min-w-[180px]">
-                            <h3 className="font-bold text-indigo-700 mb-2">{locality}</h3>
-                            <div className="space-y-1 text-xs">
-                                {estimatedRate && (
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-500">Land Rate:</span>
-                                        <span className="font-semibold text-gray-800">{formatCurrency(estimatedRate)}/cent</span>
+        <div className="relative">
+            {/* Filter Panel */}
+            <div className="mb-4 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+                <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                    <svg className="w-5 h-5 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                    </svg>
+                    Map Filters & Layers
+                </h4>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Price Range Filter */}
+                    <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Price Range (Lakhs)</label>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="number"
+                                value={filters.priceMin}
+                                onChange={(e) => setFilters(prev => ({ ...prev, priceMin: Number(e.target.value) }))}
+                                className="w-20 px-2 py-1 text-sm border border-gray-300 rounded"
+                                placeholder="Min"
+                            />
+                            <span className="text-gray-400">-</span>
+                            <input
+                                type="number"
+                                value={filters.priceMax}
+                                onChange={(e) => setFilters(prev => ({ ...prev, priceMax: Number(e.target.value) }))}
+                                className="w-20 px-2 py-1 text-sm border border-gray-300 rounded"
+                                placeholder="Max"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Distance Radius */}
+                    <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Search Radius: {filters.distanceRadius} km
+                        </label>
+                        <input
+                            type="range"
+                            min="1"
+                            max="20"
+                            value={filters.distanceRadius}
+                            onChange={(e) => setFilters(prev => ({ ...prev, distanceRadius: Number(e.target.value) }))}
+                            className="w-full"
+                        />
+                    </div>
+
+                    {/* Layer Toggles */}
+                    <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Show Layers</label>
+                        <div className="flex flex-wrap gap-2">
+                            <button
+                                onClick={() => toggleLayer('schools')}
+                                className={`px-2 py-1 text-xs rounded transition ${layers.schools ? 'bg-purple-500 text-white' : 'bg-gray-100 text-gray-600'
+                                    }`}
+                            >
+                                🏫 Schools
+                            </button>
+                            <button
+                                onClick={() => toggleLayer('hospitals')}
+                                className={`px-2 py-1 text-xs rounded transition ${layers.hospitals ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-600'
+                                    }`}
+                            >
+                                🏥 Hospitals
+                            </button>
+                            <button
+                                onClick={() => toggleLayer('landmarks')}
+                                className={`px-2 py-1 text-xs rounded transition ${layers.landmarks ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600'
+                                    }`}
+                            >
+                                🏛️ Landmarks
+                            </button>
+                            <button
+                                onClick={() => toggleLayer('heatCircles')}
+                                className={`px-2 py-1 text-xs rounded transition ${layers.heatCircles ? 'bg-teal-500 text-white' : 'bg-gray-100 text-gray-600'
+                                    }`}
+                            >
+                                🎯 Heat Zones
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Map Container */}
+            <div className="h-[550px] w-full rounded-xl overflow-hidden shadow-lg border border-gray-200 z-0 relative">
+                <MapContainer
+                    center={center}
+                    zoom={13}
+                    scrollWheelZoom={true}
+                    style={{ height: '100%', width: '100%' }}
+                >
+                    <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+
+                    {/* User's Selected Location - Always visible */}
+                    <Marker position={center} icon={Icons.Selected}>
+                        <Popup>
+                            <div className="min-w-[200px]">
+                                <h3 className="font-bold text-indigo-700 mb-2 text-base">{locality}</h3>
+                                <div className="space-y-1.5 text-sm">
+                                    {estimatedRate && (
+                                        <div className="flex justify-between bg-indigo-50 px-2 py-1 rounded">
+                                            <span className="text-gray-600">Land Rate:</span>
+                                            <span className="font-semibold text-indigo-700">{formatCurrency(estimatedRate)}/cent</span>
+                                        </div>
+                                    )}
+                                    {plotArea && (
+                                        <div className="flex justify-between bg-gray-50 px-2 py-1 rounded">
+                                            <span className="text-gray-600">Plot Size:</span>
+                                            <span className="font-semibold text-gray-800">{plotArea} cents</span>
+                                        </div>
+                                    )}
+                                    <p className="text-indigo-600 font-medium pt-2 border-t mt-2 text-center">
+                                        📍 Your Selected Location
+                                    </p>
+                                </div>
+                            </div>
+                        </Popup>
+                    </Marker>
+
+                    {/* Heat Circles - Show price zones */}
+                    {layers.heatCircles && estimatedRate && (
+                        <>
+                            <Circle
+                                center={center}
+                                radius={500}
+                                pathOptions={{ color: '#ef4444', fillColor: '#ef4444', fillOpacity: 0.1 }}
+                            />
+                            <Circle
+                                center={center}
+                                radius={1500}
+                                pathOptions={{ color: '#f59e0b', fillColor: '#f59e0b', fillOpacity: 0.08 }}
+                            />
+                            <Circle
+                                center={center}
+                                radius={3000}
+                                pathOptions={{ color: '#10b981', fillColor: '#10b981', fillOpacity: 0.05 }}
+                            />
+                        </>
+                    )}
+
+                    {/* Properties with Clustering */}
+                    {layers.properties && (
+                        <MarkerClusterGroup
+                            chunkedLoading
+                            maxClusterRadius={50}
+                            spiderfyOnMaxZoom={true}
+                            showCoverageOnHover={false}
+                        >
+                            {/* Comparables */}
+                            {filterProperties(comparables.filter(c => c.link?.startsWith('http'))).map((comp) => {
+                                const price = typeof comp.price === 'number' ? comp.price : 0;
+                                const normalizedPrice = price > 10000 ? price / 100000 : price;
+                                const offset = () => (Math.random() - 0.5) * 0.01;
+
+                                return (
+                                    <Marker
+                                        key={`comp-${comp.id}`}
+                                        position={[center[0] + offset(), center[1] + offset()]}
+                                        icon={Icons.Property}
+                                    >
+                                        <Popup>
+                                            <div className="min-w-[220px]">
+                                                <h4 className="font-bold text-gray-800  mb-2 line-clamp-2">{comp.title || 'Property'}</h4>
+                                                <div className="flex justify-between items-center mb-3 bg-blue-50 px-3 py-2 rounded">
+                                                    <span className="text-gray-600 text-sm">{comp.size} cents</span>
+                                                    <span className="font-bold text-blue-700">{formatCurrency(normalizedPrice)}</span>
+                                                </div>
+                                                <a
+                                                    href={comp.link}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="block text-center w-full bg-blue-600 text-white text-sm py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                                                >
+                                                    View Listing →
+                                                </a>
+                                            </div>
+                                        </Popup>
+                                    </Marker>
+                                );
+                            })}
+
+                            {/* Market Depth */}
+                            {filterProperties(marketDepth || []).map((item) => {
+                                let icon = Icons.MidRange;
+                                if (item.type === 'Premium') icon = Icons.Premium;
+                                if (item.type === 'Budget') icon = Icons.Budget;
+
+                                const lat = center[0] + ((item as any).latOffset || (Math.random() - 0.5) * 0.015);
+                                const lng = center[1] + ((item as any).lngOffset || (Math.random() - 0.5) * 0.015);
+                                const price = typeof item.price === 'number' ? item.price : 0;
+                                const normalizedPrice = price > 10000 ? price / 100000 : price;
+
+                                return (
+                                    <Marker key={`depth-${item.id}`} position={[lat, lng]} icon={icon}>
+                                        <Popup>
+                                            <div className="min-w-[200px]">
+                                                <span className={`inline-block mb-2 px-3 py-1 text-xs rounded-full font-semibold ${item.type === 'Premium' ? 'bg-red-100 text-red-700' :
+                                                        item.type === 'Budget' ? 'bg-green-100 text-green-700' :
+                                                            'bg-yellow-100 text-yellow-700'
+                                                    }`}>
+                                                    {item.type}
+                                                </span>
+                                                <h4 className="font-bold text-gray-800 text-sm mb-2">
+                                                    {(item as any).title || `${item.type} Property`}
+                                                </h4>
+                                                <div className="flex justify-between text-sm mb-2">
+                                                    <span className="text-gray-600">{item.size} cents</span>
+                                                    <span className="font-bold">{formatCurrency(normalizedPrice)}</span>
+                                                </div>
+                                            </div>
+                                        </Popup>
+                                    </Marker>
+                                );
+                            })}
+                        </MarkerClusterGroup>
+                    )}
+
+                    {/* Schools Layer */}
+                    {layers.schools && (
+                        <LayerGroup>
+                            {TOP_SCHOOLS.map((school, idx) => (
+                                <Marker
+                                    key={`school-${idx}`}
+                                    position={[school.coords.lat, school.coords.lng]}
+                                    icon={Icons.School}
+                                >
+                                    <Popup>
+                                        <div className="min-w-[180px]">
+                                            <h4 className="font-bold text-purple-700 mb-1">{school.name}</h4>
+                                            <p className="text-xs text-gray-600">📚 Educational Institution</p>
+                                        </div>
+                                    </Popup>
+                                </Marker>
+                            ))}
+                        </LayerGroup>
+                    )}
+
+                    {/* Hospitals Layer */}
+                    {layers.hospitals && (
+                        <LayerGroup>
+                            {MAJOR_HOSPITALS.map((hospital, idx) => (
+                                <Marker
+                                    key={`hospital-${idx}`}
+                                    position={[hospital.coords.lat, hospital.coords.lng]}
+                                    icon={Icons.Hospital}
+                                >
+                                    <Popup>
+                                        <div className="min-w-[180px]">
+                                            <h4 className="font-bold text-red-700 mb-1">{hospital.name}</h4>
+                                            <p className="text-xs text-gray-600">🏥 Healthcare Facility</p>
+                                        </div>
+                                    </Popup>
+                                </Marker>
+                            ))}
+                        </LayerGroup>
+                    )}
+
+                    {/* Landmarks Layer */}
+                    {layers.landmarks && (
+                        <LayerGroup>
+                            <Marker
+                                position={[LANDMARKS.AIRPORT.coords.lat, LANDMARKS.AIRPORT.coords.lng]}
+                                icon={Icons.Airport}
+                            >
+                                <Popup>
+                                    <div className="min-w-[180px]">
+                                        <h4 className="font-bold text-sky-700">{LANDMARKS.AIRPORT.name}</h4>
+                                        <p className="text-xs text-gray-600">✈️ International Airport</p>
                                     </div>
-                                )}
-                                {plotArea && (
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-500">Plot Size:</span>
-                                        <span className="font-semibold text-gray-800">{plotArea} cents</span>
+                                </Popup>
+                            </Marker>
+
+                            <Marker
+                                position={[LANDMARKS.LULU_MALL.coords.lat, LANDMARKS.LULU_MALL.coords.lng]}
+                                icon={Icons.Mall}
+                            >
+                                <Popup>
+                                    <div className="min-w-[180px]">
+                                        <h4 className="font-bold text-pink-700">{LANDMARKS.LULU_MALL.name}</h4>
+                                        <p className="text-xs text-gray-600">🛍️ Shopping Mall</p>
                                     </div>
-                                )}
-                                <p className="text-indigo-600 font-medium pt-1 border-t mt-1">📍 Your Selected Location</p>
+                                </Popup>
+                            </Marker>
+
+                            <Marker
+                                position={[LANDMARKS.TECHNOPARK.coords.lat, LANDMARKS.TECHNOPARK.coords.lng]}
+                                icon={Icons.Techpark}
+                            >
+                                <Popup>
+                                    <div className="min-w-[180px]">
+                                        <h4 className="font-bold text-green-700">{LANDMARKS.TECHNOPARK.name}</h4>
+                                        <p className="text-xs text-gray-600">💼 IT Park</p>
+                                    </div>
+                                </Popup>
+                            </Marker>
+                        </LayerGroup>
+                    )}
+                </MapContainer>
+
+                {/* Enhanced Legend */}
+                <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur p-3 rounded-lg shadow-lg z-[1000] text-xs border border-gray-200 max-w-[200px]">
+                    <h4 className="font-bold text-gray-700 mb-2 pb-2 border-b">Map Legend</h4>
+                    <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                                <span className="text-base mr-1.5">🏘️</span>
+                                <span className="text-gray-700">Selected</span>
                             </div>
                         </div>
-                    </Popup>
-                </Marker>
-                {/* Comparable Markers - Only Valid Links */}
-                {comparables.filter(comp => comp.link && comp.link.startsWith('http')).map((comp) => {
-                    const price = typeof comp.price === 'number' ? comp.price : 0;
-                    const normalizedPrice = price > 10000 ? price / 100000 : price;
-                    return (
-                        <Marker
-                            key={`comp-${comp.id}`}
-                            position={[center[0] + getOffset(), center[1] + getOffset()]}
-                            icon={Icons.Plot}>
-                            <Popup>
-                                <div className="min-w-[200px]">
-                                    <h4 className="font-bold text-gray-800 text-sm mb-2 line-clamp-2">{comp.title || 'Property Listing'}</h4>
-                                    <div className="flex justify-between items-center mb-3">
-                                        <span className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full">
-                                            {comp.size} cents
-                                        </span>
-                                        <span className="font-bold text-blue-700">{formatCurrency(normalizedPrice)}</span>
-                                    </div>
-                                    <a
-                                        href={comp.link}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="block text-center w-full bg-blue-600 text-white text-xs py- 1.5 rounded hover:bg-blue-700 transition-colors">
-                                        View Listing
-                                    </a>
-                                </div>
-                            </Popup>
-                        </Marker>
-                    );
-                })}
-                {/* Market Depth Markers */}
-                {marketDepth?.map((item) => {
-                    let icon = Icons.MidRange;
-                    if (item.type === 'Premium') icon = Icons.Premium;
-                    if (item.type === 'Budget') icon = Icons.Budget;
-                    const lat = center[0] + ((item as any).latOffset || getOffset());
-                    const lng = center[1] + ((item as any).lngOffset || getOffset());
-                    const price = typeof item.price === 'number' ? item.price : 0;
-                    const normalizedPrice = price > 10000 ? price / 100000 : price;
-                    const title = (item as any).title || `${item.type} Listing`;
-                    const link = (item as any).link;
-                    return (
-                        <Marker key={`depth-${item.id}`} position={[lat, lng]} icon={icon}>
-                            <Popup>
-                                <div className="min-w-[180px]">
-                                    <h4 className="font-bold text-gray-800 text-sm mb-1 line-clamp-2">{title}</h4>
-                                    <div className="flex justify-between items-center text-xs mb-2">
-                                        <span className="text-gray-500">{item.size} cents</span>
-                                        <span className="font-bold text-gray-800">{formatCurrency(normalizedPrice)}</span>
-                                    </div>
-                                    <span className={`inline-block w-full text-center text-xs px-2 py-0.5 rounded ${item.type === 'Premium' ? 'bg-red-100 text-red-700' :
-                                        item.type === 'Budget' ? 'bg-green-100 text-green-700' :
-                                            'bg-yellow-100 text-yellow-700'
-                                        }`}>
-                                        {item.type}
-                                    </span>
-                                    {link && link.startsWith('http') && (
-                                        <a
-                                            href={link}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="block text-center w-full bg-gray-600 text-white text-xs py-1 rounded hover:bg-gray-700 transition-colors mt-2">
-                                            View Details
-                                        </a>
-                                    )}
-                                </div>
-                            </Popup>
-                        </Marker>)
-                        ;
-                })
-                }
-            </MapContainer>
-            {/* Legend Overlay */}
-            <div className="absolute bottom-4 left-4 bg-white p-3 rounded-lg shadow-md z-[1000] text-xs border border-gray-200">
-                <h4 className="font-bold text-gray-700 mb-2">Map Legend</h4>
-                <div className="grid grid-cols-2 gap-2">
-                    <div className="flex items-center"><span className="w-3 h-3 bg-indigo-500 rounded-full mr-2 border border-white shadow-sm"></span> Selected</div>
-                    <div className="flex items-center"><span className="w-3 h-3 bg-blue-500 rounded-full mr-2 border border-white shadow-sm"></span> Comparable</div>
-                    <div className="flex items-center"><span className="w-3 h-3 bg-green-500 rounded-full mr-2 border border-white shadow-sm"></span> Budget</div>
-                    <div className="flex items-center"><span className="w-3 h-3 bg-yellow-500 rounded-full mr-2 border border-white shadow-sm"></span> Mid-Range</div>
-                    <div className="flex items-center"><span className="w-3 h-3 bg-red-500 rounded-full mr-2 border border-white shadow-sm"></span> Premium</div>
+                        {layers.properties && (
+                            <>
+                                <div className="flex items-center"><span className="text-base mr-1.5">🏠</span> Properties</div>
+                                <div className="flex items-center"><span className="text-base mr-1.5">💎</span> Premium</div>
+                                <div className="flex items-center"><span className="text-base mr-1.5">🏘️</span> Mid-Range</div>
+                                <div className="flex items-center"><span className="text-base mr-1.5">🏡</span> Budget</div>
+                            </>
+                        )}
+                        {layers.schools && <div className="flex items-center"><span className="text-base mr-1.5">🏫</span> Schools</div>}
+                        {layers.hospitals && <div className="flex items-center"><span className="text-base mr-1.5">🏥</span> Hospitals</div>}
+                        {layers.landmarks && (
+                            <>
+                                <div className="flex items-center"><span className="text-base mr-1.5">✈️</span> Airport</div>
+                                <div className="flex items-center"><span className="text-base mr-1.5">🛍️</span> Mall</div>
+                                <div className="flex items-center"><span className="text-base mr-1.5">💼</span> IT Park</div>
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
     );
 };
+
 export default InteractiveMap;
