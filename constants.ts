@@ -1,0 +1,167 @@
+
+export const LOCALITIES = [
+  'Akkulam',
+  'Ambalamukku',
+  'Ambalathara',
+  'Anayara',
+  'Attingal',
+  'Attukal',
+  'Balaramapuram',
+  'Beemapally',
+  'Chackai',
+  'Chanthavila',
+  'Chenkottukonam',
+  'East Fort',
+  'Enchakkal',
+  'Gandhipuram',
+  'Jagathy',
+  'Kaniyapuram',
+  'Karamana',
+  'Karyavattom',
+  'Kazhakkoottam',
+  'Kesavadasapuram',
+  'Kilimanoor',
+  'Kovalam',
+  'Kowdiar',
+  'Kudappanakunnu',
+  'Kumarapuram',
+  'Kuravankonam',
+  'Malayinkeezhu',
+  'Manacaud',
+  'Mangalapuram',
+  'Mannanthala',
+  'Maruthankuzhy',
+  'Medical College',
+  'Menamkulam',
+  'Muttada',
+  'Nalanchira',
+  'Nedumangad',
+  'Nemom',
+  'Neyyattinkara',
+  'Ooruttambalam',
+  'Palayam',
+  'Pallipuram',
+  'Pangappara',
+  'Pappanamcode',
+  'Pattom',
+  'Peroorkada',
+  'Pettah',
+  'Peyad',
+  'Pongumoodu',
+  'Poojappura',
+  'Pothencode',
+  'Powdikonam',
+  'Pravachambalam',
+  'Pulayanarkotta',
+  'Sasthamangalam',
+  'Shangumugham',
+  'Sreekaryam',
+  'St. Andrews',
+  'Statue',
+  'Technocity',
+  'Technopark Area',
+  'Thampanoor',
+  'Thirumala',
+  'Thiruvallam',
+  'Thumba',
+  'Ulloor',
+  'Vanchiyoor',
+  'Varkala',
+  'Vattiyoorkavu',
+  'Vazhuthacaud',
+  'Veli',
+  'Vellayambalam',
+  'Vellayani',
+  'Venjaramoodu',
+  'Vizhinjam'
+];
+
+// Map of Locality Name -> Approx Distance to nearest beach (in km)
+export const LOCALITY_META: Record<string, number> = {
+  'Akkulam': 3.5,
+  'Ambalamukku': 9.0,
+  'Ambalathara': 4.5,
+  'Anayara': 4.0,
+  'Attingal': 10.0, // River/Inland
+  'Attukal': 5.0,
+  'Balaramapuram': 12.0,
+  'Beemapally': 0.5, // Coastal
+  'Chackai': 2.5,
+  'Chanthavila': 12.0,
+  'Chenkottukonam': 14.0,
+  'East Fort': 4.5,
+  'Enchakkal': 3.5,
+  'Gandhipuram': 10.0,
+  'Jagathy': 7.0,
+  'Kaniyapuram': 6.0,
+  'Karamana': 6.0,
+  'Karyavattom': 8.0,
+  'Kazhakkoottam': 3.0,
+  'Kesavadasapuram': 7.0,
+  'Kilimanoor': 25.0,
+  'Kovalam': 0.5, // Coastal
+  'Kowdiar': 7.5, // Inland Premium
+  'Kudappanakunnu': 10.0,
+  'Kumarapuram': 5.5,
+  'Kuravankonam': 8.0,
+  'Malayinkeezhu': 14.0,
+  'Manacaud': 5.0,
+  'Mangalapuram': 8.0,
+  'Mannanthala': 10.0,
+  'Maruthankuzhy': 8.0,
+  'Medical College': 6.0,
+  'Menamkulam': 1.5, // Near St Andrews
+  'Muttada': 8.5,
+  'Nalanchira': 9.0,
+  'Nedumangad': 18.0,
+  'Nemom': 10.0,
+  'Neyyattinkara': 15.0,
+  'Ooruttambalam': 14.0,
+  'Palayam': 5.5,
+  'Pallipuram': 5.0,
+  'Pangappara': 6.0,
+  'Pappanamcode': 8.0,
+  'Pattom': 6.5,
+  'Peroorkada': 9.0,
+  'Pettah': 4.0,
+  'Peyad': 12.0,
+  'Pongumoodu': 7.0,
+  'Poojappura': 8.0,
+  'Pothencode': 14.0,
+  'Powdikonam': 11.0,
+  'Pravachambalam': 11.0,
+  'Pulayanarkotta': 4.0,
+  'Sasthamangalam': 8.0,
+  'Shangumugham': 0.2, // Coastal
+  'Sreekaryam': 7.0,
+  'St. Andrews': 0.3, // Coastal
+  'Statue': 5.0,
+  'Technocity': 6.0,
+  'Technopark Area': 3.0,
+  'Thampanoor': 5.0,
+  'Thirumala': 10.0,
+  'Thiruvallam': 5.0,
+  'Thumba': 0.5, // Coastal
+  'Ulloor': 6.5,
+  'Vanchiyoor': 4.5,
+  'Varkala': 1.0, // Coastal
+  'Vattiyoorkavu': 10.0,
+  'Vazhuthacaud': 6.5,
+  'Veli': 0.5, // Coastal
+  'Vellayambalam': 7.0,
+  'Vellayani': 8.0, // Lake, not sea
+  'Venjaramoodu': 22.0,
+  'Vizhinjam': 0.5
+};
+
+// Approximate reference baselines for chart context (in Lakhs/cent)
+// These act as anchors for the comparative chart.
+export const BENCHMARK_RATES = {
+  PREMIUM: 28.0, // e.g., Kowdiar/Sasthamangalam avg
+  TECH_HUB: 15.0, // e.g., Kazhakkoottam avg
+  CITY_AVG: 10.0, // General city avg
+  SUBURB: 6.0     // e.g., Pothencode/Vattiyoorkavu avg
+};
+
+export const APP_TITLE = "Trivandrum Realty AI";
+export const APP_DESC = "Developer-focused estimator for Plots & Villas in Trivandrum, featuring NRI investment suitability scores and airport connectivity analysis.";

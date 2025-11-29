@@ -1,0 +1,5 @@
+{
+  "name": "Trivandrum Realty AI",
+  "description": "An AI-powered real estate estimator for Properties and Plots in Trivandrum, utilizing Google Search to analyze market trends based on beach proximity and property features.",
+  "requestFramePermissions": []
+}
