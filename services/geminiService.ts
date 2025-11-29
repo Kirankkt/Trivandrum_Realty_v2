@@ -1,24 +1,4 @@
-import { parsePropertyMarkers } from '../utils/propertyParser';
-
-// ... (existing imports)
-
-// ... (inside predictPrice)
-// Fetch real sources
-sources = await fetchRealSources(locality);
-
-// NEW: Parse property markers deterministically
-const propertyMarkers = parsePropertyMarkers(sources);
-
-const apiKey = import.meta.env.VITE_API_KEY || process.env.API_KEY;
-// ...
-
-// ... (inside return object)
-nriMetrics: nriMetrics, // Calculated deterministically with GPS!
-  geoSpatial: aiData.geoSpatial, // AI-generated (will be Phase 3)
-    developerAnalysis: aiData.developerAnalysis,
-      confidence: confidence,
-        propertyMarkers: propertyMarkers // NEW: Deterministic markers
-  };
+import { GoogleGenAI } from "@google/genai";
 import { UserInput, PredictionResult, PropertyType, Source } from "../types";
 import { BENCHMARK_RATES } from "../constants";
 import { supabase } from './supabaseClient';
