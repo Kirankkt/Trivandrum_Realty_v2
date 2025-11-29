@@ -201,16 +201,6 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
         </div>
       )}
 
-      <div className="mb-6">
-        <h4 className="font-semibold text-gray-800 mb-2">AI Analysis</h4>
-        <p className="text-gray-600 leading-relaxed text-sm">{result.explanation}</p>
-      </div>
-
-      <div className="mb-6 bg-teal-50 rounded-lg p-4 border border-teal-100">
-        <h4 className="font-semibold text-teal-800 mb-1">Recommendation</h4>
-        <p className="text-teal-700 text-sm italic">"{result.recommendation}"</p>
-      </div>
-
       {result.sources.length > 0 && (
         <div className="mt-4 pt-4 border-t border-gray-100">
           <button
