@@ -37,14 +37,37 @@ const App: React.FC = () => {
     <AuthProvider>
       <div className="min-h-screen flex flex-col">
         <Header />
-        <main className="flex-grow container mx-auto px-4 py-8 sm:px-6 lg:px-8 max-w-6xl">
+
+        {/* Vibrant Hero Section */}
+        <section className="hero-dark mesh-gradient py-16 relative overflow-hidden">
+          {/* Floating Shapes */}
+          <div className="hero-shape hero-shape-1"></div>
+          <div className="hero-shape hero-shape-2"></div>
+          <div className="hero-shape hero-shape-3"></div>
+
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl relative z-10">
+            <div className="text-center py-12 animate-fade-in-up">
+              <h2 className="text-huge text-white mb-6 leading-tight">
+                AI-Powered Property
+                <br />
+                <span className="gradient-text font-bold">Valuation for NRIs</span>
+              </h2>
+              <p className="text-subtitle text-white/80 max-w-2xl mx-auto mb-8">
+                Get instant, data-driven property estimates for Trivandrum.
+                Transparent pricing, NRI-focused insights, and expert recommendations.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <main className="flex-grow container mx-auto px-4 py-8 sm:px-6 lg:px-8 max-w-6xl -mt-16 relative z-20">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Left Column: Form (Always Visible) */}
-            <div className="lg:col-span-4 space-y-6">
+            <div className="lg:col-span-4 space-y-6 animate-slide-left">
               <PropertyForm onSubmit={handlePrediction} isLoading={loading} />
             </div>
             {/* Right Column: Results & Tabs */}
-            <div className="lg:col-span-8 space-y-6">
+            <div className="lg:col-span-8 space-y-6 animate-slide-right">
               <LoadingProgress isLoading={loading} />
               {!loading && !result && activeTab !== 'mysaved' && (
                 <div className="h-96 flex flex-col items-center justify-center bg-white rounded-xl shadow-sm border border-dashed border-gray-300">
