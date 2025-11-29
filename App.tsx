@@ -39,7 +39,7 @@ const App: React.FC = () => {
         <Header />
 
         {/* Vibrant Hero Section */}
-        <section className="hero-dark mesh-gradient py-16 relative overflow-hidden">
+        <section className="hero-dark mesh-gradient py-16 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0f0a1f 0%, #1e0f3e 50%, #2d1554 100%)' }}>
           {/* Floating Shapes */}
           <div className="hero-shape hero-shape-1"></div>
           <div className="hero-shape hero-shape-2"></div>
@@ -48,7 +48,7 @@ const App: React.FC = () => {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl relative z-10">
             <div className="text-center py-12 animate-fade-in-up">
               <h2 className="text-huge text-white mb-6 leading-tight">
-                AI-Powered Property
+                Data-Driven Property
                 <br />
                 <span className="gradient-text font-bold">Valuation for NRIs</span>
               </h2>
@@ -79,7 +79,7 @@ const App: React.FC = () => {
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
                     </svg>
-                    Or view My Saved Estimates
+                    Or view your Dashboard
                   </button>
                 </div>
               )}
@@ -118,7 +118,7 @@ const App: React.FC = () => {
                     <button
                       onClick={() => setActiveTab('mysaved')}
                       className={`flex-1 min-w-[100px] py-2.5 text-sm font-medium rounded-md transition-all ${activeTab === 'mysaved' ? 'bg-white text-blue-700 shadow' : 'text-gray-500 hover:text-gray-700'}`}>
-                      My Saved
+                      Dashboard
                     </button>
                   </div>
                   {/* Tab Content */}

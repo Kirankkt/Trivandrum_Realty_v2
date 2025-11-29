@@ -50,7 +50,23 @@ const Header: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center space-x-4 animate-slide-right">
+        <div className="flex items-center space-x-6 animate-slide-right">
+          {/* Navigation Links */}
+          <nav className="hidden md:flex items-center space-x-6">
+            <a href="#how-it-works" className="text-white/80 hover:text-white text-sm font-medium transition-colors">
+              How It Works
+            </a>
+            <a href="#pricing" className="text-white/80 hover:text-white text-sm font-medium transition-colors">
+              Pricing
+            </a>
+            <a href="#resources" className="text-white/80 hover:text-white text-sm font-medium transition-colors">
+              Resources
+            </a>
+            <a href="#contact" className="text-white/80 hover:text-white text-sm font-medium transition-colors">
+              Contact
+            </a>
+          </nav>
+
           {/* Live Market Badge */}
           <div className="flex items-center space-x-2 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 backdrop-blur-sm py-2.5 px-4 rounded-full text-xs font-semibold border border-emerald-400/30 hover-glow transition-all">
             <span className="relative flex h-3 w-3">

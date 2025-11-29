@@ -163,7 +163,7 @@ export const BENCHMARK_RATES = {
   SUBURB: 6.0     // e.g., Pothencode/Vattiyoorkavu avg
 };
 
-export const APP_TITLE = "Trivandrum Realty AI";
+export const APP_TITLE = "Trivandrum Realty";
 export const APP_DESC = "Developer-focused estimator for Plots & Villas in Trivandrum, featuring NRI investment suitability scores and airport connectivity analysis.";
 
 // ========================================
