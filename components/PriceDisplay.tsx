@@ -3,6 +3,7 @@ import { PredictionResult, UserInput, PropertyType } from '../types';
 import { supabase } from '../services/supabaseClient';
 import { User } from '@supabase/supabase-js';
 import { formatCurrency } from '../utils/formatters';
+import LeadCaptureModal from './LeadCaptureModal';
 interface PriceDisplayProps {
   result: PredictionResult | null;
   input: UserInput | null;
@@ -12,6 +13,7 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saved' | 'error'>('idle');
+  const [showLeadModal, setShowLeadModal] = useState(false);
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -87,6 +89,19 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
             </>
           )}
         </button>
+      </div>
+      {/* Contact Agent Button */}
+      <div className="mb-6">
+        <button
+          onClick={() => setShowLeadModal(true)}
+          className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-3 group"
+        >
+          <svg className="w-6 h-6 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+          </svg>
+          <span className="text-lg">Contact Verified Agent</span>
+        </button>
+        <p className="text-xs text-gray-500 text-center mt-2">Get expert guidance for buying or selling in {input?.locality}</p>
       </div>
       {/* Breakdown */}
       {result.breakdown && (
@@ -167,6 +182,12 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
           )}
         </div>
       )}
+      {/* Lead Capture Modal */}
+      <LeadCaptureModal
+        isOpen={showLeadModal}
+        onClose={() => setShowLeadModal(false)}
+        locality={input?.locality || 'Trivandrum'}
+      />
     </div>
   );
 };
