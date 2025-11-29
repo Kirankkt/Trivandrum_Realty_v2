@@ -33,8 +33,8 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
 
     setIsSaving(true);
     try {
-      // Format property details string
-      let propertyDetails = input?.type || 'Property';
+      // Format property details string for display
+      let propertyDetails = '';
       if (input?.type === PropertyType.PROPERTY && input?.bedrooms) {
         propertyDetails = `${input.bedrooms} | ${input.builtArea} sqft`;
       } else if (input?.plotArea) {
@@ -48,7 +48,8 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
       const { error } = await supabase.from('saved_estimates').insert({
         user_id: user.id,
         locality: input?.locality || 'Trivandrum',
-        property_type: propertyDetails,
+        property_type: input?.type || 'Property', // FIXED: Actual type, not bedroom count
+        property_details: propertyDetails, // NEW: Bedroom/sqft details
         estimated_price: `${formattedMin}-${formattedMax}`
       });
 
