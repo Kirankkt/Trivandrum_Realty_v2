@@ -341,9 +341,18 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
   let depreciation = 0;
   if (isHouse) {
     constructionRate = Number(aiData.constructionRate || 3000);
-    if (input.propertyAge === '>10') depreciation = 0.35;
-    else if (input.propertyAge === '5-10') depreciation = 0.15;
-    else depreciation = 0.0;
+
+    // Fixed: Match actual form dropdown values
+    if (input.propertyAge?.includes('> 10') || input.propertyAge?.includes('Old')) {
+      depreciation = 0.35; // 35% for old properties
+    } else if (input.propertyAge?.includes('< 10') || input.propertyAge?.includes('Resale')) {
+      depreciation = 0.15; // 15% for resale properties
+    } else {
+      depreciation = 0.0; // 0% for brand new
+    }
+
+    console.log(`🏗️ Construction: Rate=₹${constructionRate}/sqft, Age="${input.propertyAge}", Depreciation=${depreciation * 100}%`);
+
     structureValue = (builtArea * constructionRate / 100000) * (1 - depreciation);
   }
   // Total Value
