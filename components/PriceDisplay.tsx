@@ -48,8 +48,10 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
       const { error } = await supabase.from('saved_estimates').insert({
         user_id: user.id,
         locality: input?.locality || 'Trivandrum',
-        property_type: input?.type || 'Property', // FIXED: Actual type, not bedroom count
-        property_details: propertyDetails, // NEW: Bedroom/sqft details
+        property_type: input?.type || 'Property',
+        land_area_cents: input?.plotArea || null,
+        built_area_sqft: input?.builtArea || null,
+        bedrooms: input?.bedrooms ? `${input.bedrooms} BHK` : null,
         estimated_price: `${formattedMin}-${formattedMax}`
       });
 
