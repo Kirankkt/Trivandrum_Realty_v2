@@ -103,7 +103,7 @@ const App: React.FC = () => {
                   <div className="min-h-[500px]">
                     {activeTab === 'valuation' && (
                       <>
-                        <PriceDisplay result={result} />
+                        <PriceDisplay result={result} input={currentInput} />
                         <DeveloperInsights result={result} />
                       </>
                     )}
