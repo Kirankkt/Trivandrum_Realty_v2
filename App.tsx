@@ -6,7 +6,6 @@ import PriceDisplay from './components/PriceDisplay';
 import HistoricalModels from './components/HistoricalModels';
 import GeospatialView from './components/GeospatialView';
 import TopLocations from './components/TopLocations';
-import DeveloperInsights from './components/DeveloperInsights';
 import NriView from './components/NriView';
 import LoadingProgress from './components/LoadingProgress';
 import MySavedListings from './components/MySavedListings';
@@ -102,10 +101,7 @@ const App: React.FC = () => {
                   {/* Tab Content */}
                   <div className="min-h-[500px]">
                     {activeTab === 'valuation' && (
-                      <>
-                        <PriceDisplay result={result} input={currentInput} />
-                        <DeveloperInsights result={result} />
-                      </>
+                      <PriceDisplay result={result} input={currentInput} />
                     )}
                     {activeTab === 'nri' && (
                       <NriView result={result} />
