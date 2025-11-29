@@ -165,3 +165,220 @@ export const BENCHMARK_RATES = {
 
 export const APP_TITLE = "Trivandrum Realty AI";
 export const APP_DESC = "Developer-focused estimator for Plots & Villas in Trivandrum, featuring NRI investment suitability scores and airport connectivity analysis.";
+
+// ========================================
+// GPS COORDINATES - Professional Data
+// ========================================
+
+export interface Coordinates {
+  lat: number;
+  lng: number;
+}
+
+// GPS coordinates for all 76 Trivandrum localities
+export const LOCALITY_COORDS: Record<string, Coordinates> = {
+  'Akkulam': { lat: 8.5243, lng: 76.9225 },
+  'Ambalamukku': { lat: 8.4936, lng: 76.9553 },
+  'Ambalathara': { lat: 8.5032, lng: 76.9012 },
+  'Anayara': { lat: 8.5601, lng: 76.9034 },
+  'Attingal': { lat: 8.6905, lng: 76.8155 },
+  'Attukal': { lat: 8.4852, lng: 76.9456 },
+  'Balaramapuram': { lat: 8.3827, lng: 76.9682 },
+  'Beemapally': { lat: 8.4789, lng: 76.9256 },
+  'Chackai': { lat: 8.5012, lng: 76.9298 },
+  'Chanthavila': { lat: 8.3501, lng: 77.0234 },
+  'Chenkottukonam': { lat: 8.6123, lng: 77.0456 },
+  'East Fort': { lat: 8.4976, lng: 76.9512 },
+  'Enchakkal': { lat: 8.5156, lng: 76.9234 },
+  'Gandhipuram': { lat: 8.3945, lng: 76.9834 },
+  'Jagathy': { lat: 8.5423, lng: 76.9567 },
+  'Kaniyapuram': { lat: 8.5789, lng: 76.8845 },
+  'Karamana': { lat: 8.5123, lng: 76.9678 },
+  'Karyavattom': { lat: 8.5567, lng: 76.9012 },
+  'Kazhakkoottam': { lat: 8.5967, lng: 76.8734 },
+  'Kesavadasapuram': { lat: 8.5245, lng: 76.9456 },
+  'Kilimanoor': { lat: 8.6445, lng: 77.0534 },
+  'Kovalam': { lat: 8.4001, lng: 76.9788 },
+  'Kowdiar': { lat: 8.5241, lng: 76.9478 },
+  'Kudappanakunnu': { lat: 8.5089, lng: 77.0012 },
+  'Kumarapuram': { lat: 8.4956, lng: 76.9589 },
+  'Kuravankonam': { lat: 8.5334, lng: 76.9823 },
+  'Malayinkeezhu': { lat: 8.4012, lng: 77.0123 },
+  'Manacaud': { lat: 8.5134, lng: 76.9712 },
+  'Mangalapuram': { lat: 8.4523, lng: 76.9123 },
+  'Mannanthala': { lat: 8.5456, lng: 77.0001 },
+  'Maruthankuzhy': { lat: 8.5689, lng: 76.8923 },
+  'Medical College': { lat: 8.5301, lng: 76.9445 },
+  'Menamkulam': { lat: 8.8234, lng: 76.7512 },
+  'Muttada': { lat: 8.4678, lng: 76.9934 },
+  'Nalanchira': { lat: 8.5167, lng: 77.0034 },
+  'Nedumangad': { lat: 8.6012, lng: 77.0012 },
+  'Nemom': { lat: 8.4123, lng: 76.9934 },
+  'Neyyattinkara': { lat: 8.3989, lng: 77.0823 },
+  'Ooruttambalam': { lat: 8.6234, lng: 77.0623 },
+  'Palayam': { lat: 8.5067, lng: 76.9523 },
+  'Pallipuram': { lat: 8.4823, lng: 76.9134 },
+  'Pangappara': { lat: 8.5523, lng: 76.9012 },
+  'Pappanamcode': { lat: 8.5578, lng: 76.9123 },
+  'Pattom': { lat: 8.5147, lng: 76.9470 },
+  'Peroorkada': { lat: 8.5412, lng: 76.9989 },
+  'Pettah': { lat: 8.5134, lng: 76.9534 },
+  'Peyad': { lat: 8.6156, lng: 77.0234 },
+  'Pongumoodu': { lat: 8.5234, lng: 76.9456 },
+  'Poojappura': { lat: 8.5167, lng: 76.9734 },
+  'Pothencode': { lat: 8.6812, lng: 76.9445 },
+  'Powdikonam': { lat: 8.5789, lng: 76.9823 },
+  'Pravachambalam': { lat: 8.5523, lng: 77.0012 },
+  'Pulayanarkotta': { lat: 8.5334, lng: 76.9234 },
+  'Sasthamangalam': { lat: 8.5412, lng: 76.9445 },
+  'Shangumugham': { lat: 8.4723, lng: 76.9201 },
+  'Sreekaryam': { lat: 8.5712, lng: 76.9023 },
+  'St. Andrews': { lat: 8.4834, lng: 76.9178 },
+  'Statue': { lat: 8.4934, lng: 76.9456 },
+  'Technocity': { lat: 8.5456, lng: 76.8934 },
+  'Technopark Area': { lat: 8.5473, lng: 76.9012 },
+  'Thampanoor': { lat: 8.4901, lng: 76.9534 },
+  'Thirumala': { lat: 8.5623, lng: 76.9823 },
+  'Thiruvallam': { lat: 8.5334, lng: 76.9123 },
+  'Thumba': { lat: 8.5334, lng: 76.8812 },
+  'Ulloor': { lat: 8.5456, lng: 76.9445 },
+  'Vanchiyoor': { lat: 8.4967, lng: 76.9512 },
+  'Varkala': { lat: 8.7380, lng: 76.7160 },
+  'Vattiyoorkavu': { lat: 8.5567, lng: 77.0056 },
+  'Vazhuthacaud': { lat: 8.5089, lng: 76.9567 },
+  'Veli': { lat: 8.4823, lng: 76.9156 },
+  'Vellayambalam': { lat: 8.5178, lng: 76.9489 },
+  'Vellayani': { lat: 8.4345, lng: 77.0012 },
+  'Venjaramoodu': { lat: 8.6789, lng: 77.0623 },
+  'Vizhinjam': { lat: 8.3801, lng: 76.9890 }
+};
+
+// Key landmarks for distance calculations
+export const LANDMARKS = {
+  AIRPORT: {
+    name: 'Trivandrum International Airport (TRV)',
+    coords: { lat: 8.4821, lng: 76.9200 }
+  },
+  LULU_MALL: {
+    name: 'Lulu Mall Trivandrum',
+    coords: { lat: 8.5132, lng: 76.9506 }
+  },
+  TECHNOPARK: {
+    name: 'Technopark Phase 1',
+    coords: { lat: 8.5473, lng: 76.9012 }
+  },
+  RAILWAY_STATION: {
+    name: 'Trivandrum Central Railway Station',
+    coords: { lat: 8.4901, lng: 76.9534 }
+  },
+  MEDICAL_COLLEGE: {
+    name: 'Government Medical College Hospital',
+    coords: { lat: 8.5301, lng: 76.9445 }
+  },
+  SCTIMST: {
+    name: 'SCTIMST Hospital',
+    coords: { lat: 8.5345, lng: 76.9712 }
+  }
+};
+
+// Major schools for "Mom Test" social infrastructure
+export const TOP_SCHOOLS = [
+  { name: 'Loyola School', coords: { lat: 8.5123, lng: 76.9551 } },
+  { name: 'Holy Angels ISC School', coords: { lat: 8.5234, lng: 76.9478 } },
+  { name: 'Kendriya Vidyalaya Pattom', coords: { lat: 8.5167, lng: 76.9489 } },
+  { name: 'Sarvodaya Vidyalaya', coords: { lat: 8.5089, lng: 76.9534 } },
+  { name: 'St. Joseph\'s School', coords: { lat: 8.5045, lng: 76.9623 } },
+  { name: 'Chinmaya Vidyalaya', coords: { lat: 8.5456, lng: 76.9423 } }
+];
+
+// Major hospitals for social infrastructure
+export const MAJOR_HOSPITALS = [
+  { name: 'SIMS Hospital', coords: { lat: 8.5167, lng: 76.9523 } },
+  { name: 'KIMS Hospital', coords: { lat: 8.5123, lng: 76.9456 } },
+  { name: 'Meditrina Hospital', coords: { lat: 8.5234, lng: 76.9512 } },
+  { name: 'Baby Memorial Hospital', coords: { lat: 8.5045, lng: 76.9589 } },
+  { name: 'SCTIMST', coords: { lat: 8.5345, lng: 76.9712 } },
+  { name: 'Cosmopolitan Hospital', coords: { lat: 8.5456, lng: 76.9623 } }
+];
+
+// Locality tier classification for NRI scoring
+// Based on infrastructure, connectivity, and market dynamics
+export const LOCALITY_TIERS: Record<string, 'Premium' | 'Tech' | 'City' | 'Suburb'> = {
+  'Kowdiar': 'Premium',
+  'Sasthamangalam': 'Premium',
+  'Vellayambalam': 'Premium',
+  'Medical College': 'Premium',
+  'Pattom': 'Premium',
+  'Vazhuthacaud': 'Premium',
+
+  'Kazhakkoottam': 'Tech',
+  'Technopark Area': 'Tech',
+  'Technocity': 'Tech',
+  'Sreekaryam': 'Tech',
+  'Karyavattom': 'Tech',
+  'Pappanamcode': 'Tech',
+
+  'Palayam': 'City',
+  'Thampanoor': 'City',
+  'East Fort': 'City',
+  'Statue': 'City',
+  'Kesavadasapuram': 'City',
+  'Jagathy': 'City',
+  'Ulloor': 'City',
+  'Kumarapuram': 'City',
+  'Pettah': 'City',
+  'Vanchiyoor': 'City',
+  'Manacaud': 'City',
+  'Poojappura': 'City',
+  'Karamana': 'City',
+
+  // All others default to 'Suburb'
+  'Akkulam': 'Suburb',
+  'Ambalamukku': 'Suburb',
+  'Ambalathara': 'Suburb',
+  'Anayara': 'Suburb',
+  'Attingal': 'Suburb',
+  'Attukal': 'Suburb',
+  'Balaramapuram': 'Suburb',
+  'Beemapally': 'Suburb',
+  'Chackai': 'Suburb',
+  'Chanthavila': 'Suburb',
+  'Chenkottukonam': 'Suburb',
+  'Enchakkal': 'Suburb',
+  'Gandhipuram': 'Suburb',
+  'Kaniyapuram': 'Suburb',
+  'Kilimanoor': 'Suburb',
+  'Kovalam': 'Suburb',
+  'Kudappanakunnu': 'Suburb',
+  'Kuravankonam': 'Suburb',
+  'Malayinkeezhu': 'Suburb',
+  'Mangalapuram': 'Suburb',
+  'Mannanthala': 'Suburb',
+  'Maruthankuzhy': 'Suburb',
+  'Menamkulam': 'Suburb',
+  'Muttada': 'Suburb',
+  'Nalanchira': 'Suburb',
+  'Nedumangad': 'Suburb',
+  'Nemom': 'Suburb',
+  'Neyyattinkara': 'Suburb',
+  'Ooruttambalam': 'Suburb',
+  'Pallipuram': 'Suburb',
+  'Pangappara': 'Suburb',
+  'Peroorkada': 'Suburb',
+  'Peyad': 'Suburb',
+  'Pongumoodu': 'Suburb',
+  'Pothencode': 'Suburb',
+  'Powdikonam': 'Suburb',
+  'Pravachambalam': 'Suburb',
+  'Pulayanarkotta': 'Suburb',
+  'Shangumugham': 'Suburb',
+  'St. Andrews': 'Suburb',
+  'Thirumala': 'Suburb',
+  'Thiruvallam': 'Suburb',
+  'Thumba': 'Suburb',
+  'Varkala': 'Suburb',
+  'Vattiyoorkavu': 'Suburb',
+  'Veli': 'Suburb',
+  'Vellayani': 'Suburb',
+  'Venjaramoodu': 'Suburb'
+};

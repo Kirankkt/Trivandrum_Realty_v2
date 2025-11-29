@@ -2,6 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 import { UserInput, PredictionResult, PropertyType, Source } from "../types";
 import { BENCHMARK_RATES } from "../constants";
 import { supabase } from './supabaseClient';
+import { generateNRIMetrics } from '../utils/nriScoring';
 // Fetch real sources using Serper API
 const fetchRealSources = async (locality: string): Promise<Source[]> => {
   // Try standard Vite env var first, fallback to process.env for safety
@@ -208,55 +209,10 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
          "appreciationForecast": "string",
          "demandTrend": "High" | "Moderate" | "Low",
          "marketSentiment": "string"
-      },
-      "nriMetrics": {
-         "suitabilityScore": number,
-         "airportDist": number,
-         "mallDist": number,
-         "isVillaFeasible": boolean,
-         "villaFeasibilityReason": "string",
-         "socialInfra": {
-            "nearestSchool": { "name": "string", "distance": number },
-            "nearestHospital": { "name": "string", "distance": number }
-         }
-      },
-      "geoSpatial": {
-         "terrain": "string",
-         "neighborhoodVibe": "string",
-         "priceGradient": "string",
-         "growthDrivers": ["string", "string"],
-         "microMarkets": [
-            { "name": "string (specific area/road name)", "priceLevel": "High/Med/Low", "description": "string" }
-         ],
-          "marketDepth": [
-            { 
-              "id": number, 
-              "title": "Actual property listing title from sources",
-              "size": number (in cents), 
-              "price": number (MUST be in Lakhs, NOT Rupees), 
-              "type": "Premium" | "Mid-Range" | "Budget", 
-              "link": "Valid HTTP URL from sources or empty string if unavailable",
-              "latOffset": number (small offset like 0.001 to 0.01), 
-              "lngOffset": number (small offset like 0.001 to 0.01)
-            }
-          ]
-       },
-       "developerAnalysis": {
-          "maxVillas": number,
-          "projectedSalePrice": number (in Lakhs per villa),
-          "demandForVillas": "High" | "Moderate" | "Low",
-          "comparables": [
-             { 
-               "id": number, 
-               "title": "EXACT listing title from MARKET DATA CONTEXT sources above", 
-               "size": number (in cents - MUST be within 50% of user's plot size), 
-               "price": number (MUST be in Lakhs, NOT Rupees - divide by 100000 if needed), 
-               "link": "MUST be valid HTTP/HTTPS URL from sources above, NO dummy links",
-               "type": "Premium" | "Mid-Range" | "Budget"
-             }
-          ]
-       }
+      }
     }
+    
+    NOTE: Do NOT include nriMetrics or geoSpatial - these are calculated separately.
     CRITICAL SIZE MATCHING RULE FOR COMPARABLES:
     - If user's plot is 5 cents, comparables MUST be between 2.5-10 cents (within 50% range)
     - If user's plot is 10 cents, comparables MUST be between 5-20 cents
@@ -375,6 +331,13 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     finalStructureValue: Number(structureValue.toFixed(2)),
     roadAccessAdjustment: roadAdjText
   };
+  // Calculate NRI metrics deterministically (not from AI)
+  const nriMetrics = generateNRIMetrics(
+    input.locality,
+    input.plotArea,
+    input.distanceToBeach
+  );
+
   return {
     minPrice: finalMin,
     maxPrice: finalMax,
@@ -386,8 +349,8 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
     estimatedStructureValue: Number(structureValue.toFixed(2)),
     breakdown: breakdown,
     investment: aiData.investment,
-    nriMetrics: aiData.nriMetrics,
-    geoSpatial: aiData.geoSpatial,
+    nriMetrics: nriMetrics, // Now calculated locally!
+    geoSpatial: undefined, // Will be enhanced in Phase 3
     developerAnalysis: aiData.developerAnalysis,
     confidence: confidence
   };
