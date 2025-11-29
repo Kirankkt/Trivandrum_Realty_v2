@@ -281,24 +281,49 @@ export const LANDMARKS = {
   }
 };
 
-// Major schools for "Mom Test" social infrastructure
+// Major schools for "Mom Test" social infrastructure - Distributed across Trivandrum
 export const TOP_SCHOOLS = [
+  // Central Trivandrum
   { name: 'Loyola School', coords: { lat: 8.5123, lng: 76.9551 } },
   { name: 'Holy Angels ISC School', coords: { lat: 8.5234, lng: 76.9478 } },
   { name: 'Kendriya Vidyalaya Pattom', coords: { lat: 8.5167, lng: 76.9489 } },
   { name: 'Sarvodaya Vidyalaya', coords: { lat: 8.5089, lng: 76.9534 } },
   { name: 'St. Joseph\'s School', coords: { lat: 8.5045, lng: 76.9623 } },
-  { name: 'Chinmaya Vidyalaya', coords: { lat: 8.5456, lng: 76.9423 } }
+  { name: 'Chinmaya Vidyalaya', coords: { lat: 8.5456, lng: 76.9423 } },
+
+  // Coastal Area (Kovalam, Vizhinjam)
+  { name: 'Govt. Model School Kovalam', coords: { lat: 8.4050, lng: 76.9750 } },
+  { name: 'Vizhinjam Public School', coords: { lat: 8.3820, lng: 76.9900 } },
+
+  // Tech Corridor
+  { name: 'Technopark Public School', coords: { lat: 8.5550, lng: 76.8800 } },
+  { name: 'Oxford School Kazhakkoottam', coords: { lat: 8.5650, lng: 76.8750 } },
+
+  // Northern Suburbs
+  { name: 'Kendriya Vidyalaya Peroorkada', coords: { lat: 8.5450, lng: 76.9700 } },
+  { name: 'NSS School Nedumangad', coords: { lat: 8.6050, lng: 77.0050 } }
 ];
 
-// Major hospitals for social infrastructure
+// Major hospitals for social infrastructure - Distributed across Trivandrum
 export const MAJOR_HOSPITALS = [
+  // Central Trivandrum
   { name: 'SIMS Hospital', coords: { lat: 8.5167, lng: 76.9523 } },
   { name: 'KIMS Hospital', coords: { lat: 8.5123, lng: 76.9456 } },
   { name: 'Meditrina Hospital', coords: { lat: 8.5234, lng: 76.9512 } },
   { name: 'Baby Memorial Hospital', coords: { lat: 8.5045, lng: 76.9589 } },
   { name: 'SCTIMST', coords: { lat: 8.5345, lng: 76.9712 } },
-  { name: 'Cosmopolitan Hospital', coords: { lat: 8.5456, lng: 76.9623 } }
+  { name: 'Cosmopolitan Hospital', coords: { lat: 8.5456, lng: 76.9623 } },
+
+  // Coastal Area
+  { name: 'Upasana Hospital Kovalam', coords: { lat: 8.4100, lng: 76.9800 } },
+  { name: 'Govt. Hospital Vizhinjam', coords: { lat: 8.3850, lng: 76.9920 } },
+
+  // Tech Corridor  
+  { name: 'KIMS Kazhakkoottam', coords: { lat: 8.5600, lng: 76.8800 } },
+
+  // Northern Areas
+  { name: 'Govt. Hospital Nedumangad', coords: { lat: 8.6000, lng: 77.0000 } },
+  { name: 'PRS Hospital', coords: { lat: 8.5400, lng: 76.9800 } }
 ];
 
 // Locality tier classification for NRI scoring
