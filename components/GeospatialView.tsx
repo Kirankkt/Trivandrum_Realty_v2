@@ -14,7 +14,8 @@ const GeospatialView: React.FC<GeospatialViewProps> = ({ result, locality }) => 
     // Calculate data-driven stats
     const comparables = result.developerAnalysis?.comparables || [];
     const marketDepth = result.geoSpatial?.marketDepth || [];
-    const allProperties = [...comparables, ...(marketDepth as any[])];
+    const propertyMarkers = result.propertyMarkers || []; // NEW: Parsed from Serper
+    const allProperties = [...comparables, ...(marketDepth as any[]), ...propertyMarkers];
 
     // Calculate real statistics
     const propertyCount = allProperties.length;
@@ -169,8 +170,8 @@ const GeospatialView: React.FC<GeospatialViewProps> = ({ result, locality }) => 
                                         <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{market.name}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${market.priceLevel === 'High' ? 'bg-red-100 text-red-800' :
-                                                    market.priceLevel === 'Moderate' || market.priceLevel === 'Med' ? 'bg-yellow-100 text-yellow-800' :
-                                                        'bg-green-100 text-green-800'
+                                                market.priceLevel === 'Moderate' || market.priceLevel === 'Med' ? 'bg-yellow-100 text-yellow-800' :
+                                                    'bg-green-100 text-green-800'
                                                 }`}>
                                                 {market.priceLevel}
                                             </span>
