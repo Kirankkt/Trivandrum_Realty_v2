@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { PredictionResult } from '../types';
+import { PredictionResult, UserInput, PropertyType } from '../types';
 import { supabase } from '../services/supabaseClient';
 import { User } from '@supabase/supabase-js';
+import { formatCurrency } from '../utils/formatters';
 interface PriceDisplayProps {
   result: PredictionResult | null;
+  input: UserInput | null;
 }
-const PriceDisplay: React.FC<PriceDisplayProps> = ({ result }) => {
+const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
   const [showSources, setShowSources] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -23,26 +25,31 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result }) => {
     }
     setIsSaving(true);
     try {
+      // Format property details string
+      let propertyDetails = input?.type || 'Property';
+      if (input?.type === PropertyType.PROPERTY && input?.bedrooms) {
+        propertyDetails = `${input.bedrooms} | ${input.builtArea} sqft`;
+      } else if (input?.plotArea) {
+        propertyDetails = `${input.plotArea} cents`;
+      }
+      // Format price with formatCurrency utility
+      const formattedMin = formatCurrency(result.minPrice);
+      const formattedMax = formatCurrency(result.maxPrice);
       const { error } = await supabase.from('saved_estimates').insert({
         user_id: user.id,
-        locality: 'Trivandrum', // Ideally passed as prop
-        property_type: 'Property', // Defaulting
-        estimated_price: `${result.minPrice}-${result.maxPrice} Lakhs`
+        locality: input?.locality || 'Trivandrum',
+        property_type: propertyDetails,
+        estimated_price: `${formattedMin}-${formattedMax}`
       });
       if (error) throw error;
       setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 3000); // Reset after 3s
     } catch (err) {
       console.error('Error saving:', err);
       setSaveStatus('error');
     } finally {
       setIsSaving(false);
     }
-  };
-  const formatPrice = (price: number) => {
-    if (price >= 100) {
-      return `₹${(price / 100).toFixed(2)} Cr`;
-    }
-    return `₹${price} Lakhs`;
   };
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 mb-8 border border-teal-100 transform transition-all hover:scale-[1.01]">
@@ -51,7 +58,9 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result }) => {
           <h3 className="text-gray-500 font-medium text-sm uppercase tracking-wider">Estimated Total Value</h3>
           <div className="flex items-baseline mt-1">
             <span className="text-4xl font-extrabold text-teal-700">
-              {formatPrice(result.minPrice)} - {formatPrice(result.maxPrice)}
+              {result.minPrice >= 100 ? `₹${(result.minPrice / 100).toFixed(2)} Cr` : `₹${result.minPrice} Lakhs`}
+              -
+              {result.maxPrice >= 100 ? `₹${(result.maxPrice / 100).toFixed(2)} Cr` : `₹${result.maxPrice} Lakhs`}
             </span>
           </div>
         </div>
@@ -60,8 +69,8 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result }) => {
           onClick={handleSave}
           disabled={isSaving || saveStatus === 'saved'}
           className={`flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${saveStatus === 'saved'
-              ? 'bg-green-100 text-green-700 cursor-default'
-              : 'bg-gray-100 text-gray-600 hover:bg-pink-50 hover:text-pink-600'
+            ? 'bg-green-100 text-green-700 cursor-default'
+            : 'bg-gray-100 text-gray-600 hover:bg-pink-50 hover:text-pink-600'
             }`}
         >
           {saveStatus === 'saved' ? (
