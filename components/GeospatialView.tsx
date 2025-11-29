@@ -91,12 +91,6 @@ const GeospatialView: React.FC<GeospatialViewProps> = ({ result, locality }) => 
                             <span className="text-gray-600 text-sm">Properties Found:</span>
                             <span className="font-bold text-2xl text-teal-700">{propertyCount}</span>
                         </div>
-                        {propertyCount > 0 && (
-                            <div className="flex justify-between items-baseline">
-                                <span className="text-gray-600 text-sm">Avg Price:</span>
-                                <span className="font-semibold text-lg text-gray-800">₹{normalizedAvgPrice.toFixed(1)}L</span>
-                            </div>
-                        )}
                     </div>
                     <p className="text-xs text-gray-500 mt-3">
                         Based on real property listings from 99acres & MagicBricks
