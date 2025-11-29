@@ -96,6 +96,14 @@ export interface PredictionResult {
     sampleSize: number;
     lastUpdated?: string;
   };
+  propertyMarkers?: Array<{
+    id: number;
+    title: string;
+    link: string;
+    estimatedPrice?: number;
+    estimatedSize?: number;
+    type: 'Premium' | 'Mid-Range' | 'Budget' | 'Unknown';
+  }>;
 }
 
 export interface ChartData {
