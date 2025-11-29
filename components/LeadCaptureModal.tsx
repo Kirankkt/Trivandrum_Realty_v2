@@ -35,16 +35,17 @@ const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({ isOpen, onClose, lo
 
         setIsSubmitting(true);
         try {
+            // Fixed: Match actual Supabase table schema
             const { error } = await supabase.from('leads').insert({
-                name: name.trim(),
                 phone_number: phone.trim(),
-                interest_type: interestType,
-                locality: locality,
-                notes: notes.trim() || null,
+                interest_area: `${interestType} - ${locality}${notes.trim() ? ` (${notes.trim()})` : ''}`,
                 status: 'New'
             });
 
-            if (error) throw error;
+            if (error) {
+                console.error('Supabase error:', error);
+                throw error;
+            }
 
             setSubmitStatus('success');
 
@@ -147,8 +148,8 @@ const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({ isOpen, onClose, lo
                                             onClick={() => setInterestType(type)}
                                             disabled={isSubmitting}
                                             className={`py-3 px-4 rounded-lg font-medium transition-all ${interestType === type
-                                                    ? 'bg-blue-600 text-white shadow-md'
-                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                ? 'bg-blue-600 text-white shadow-md'
+                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                                 }`}
                                         >
                                             {type === 'Buy' ? '🏠 Buy' : type === 'Sell' ? '💰 Sell' : '🔍 Explore'}
