@@ -144,14 +144,16 @@ export const predictPrice = async (input: UserInput): Promise<PredictionResult> 
   let medianLandRate = cachedRate;
   // Step 2: Get baseline for validation
   const baseline = await getBaseline(locality);
+
+  // Fetch real sources (needed for property markers even if rate is cached)
+  sources = await fetchRealSources(locality);
+
+  // NEW: Parse property markers deterministically from sources
+  const propertyMarkers = parsePropertyMarkers(sources);
+
   // Step 3: If no cache, fetch from AI
   let aiData: any = {};
   if (!cachedRate) {
-    // Fetch real sources
-    sources = await fetchRealSources(locality);
-
-    // NEW: Parse property markers deterministically
-    const propertyMarkers = parsePropertyMarkers(sources);
 
     const apiKey = import.meta.env.VITE_API_KEY || process.env.API_KEY;
     if (!apiKey) {
