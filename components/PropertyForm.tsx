@@ -98,12 +98,12 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
         </div>
         {/* Distance to Beach */}
         <div>
-          <div className="flex justify-between mb-1">
-            <label className="block text-sm font-medium text-white/90">
-              Distance to Beach
-              {isAutoSet && <span className="ml-2 text-xs text-blue-600 font-normal bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">Auto-set for {locality}</span>}
-            </label>
-            <span className="text-sm font-semibold text-blue-700">{distance} km</span>
+          <div className="flex items-center justify-between mb-3">
+            <label className="text-sm font-medium text-white/90">Distance to Beach</label>
+            <div className="flex items-center gap-2">
+              {isAutoSet && <span className="text-xs text-teal-400 bg-teal-400/10 px-2 py-0.5 rounded border border-teal-400/20">Auto: {locality}</span>}
+              <span className="text-sm font-bold text-teal-400">{distance} km</span>
+            </div>
           </div>
           <input
             type="range"
@@ -112,10 +112,10 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
             step="0.1"
             value={distance}
             onChange={(e) => handleDistanceChange(parseFloat(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+            className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-teal-500"
           />
-          <div className="flex justify-between text-xs text-white/60 mt-1">
-            <span>Beachfront (Nearest Coast)</span>
+          <div className="flex justify-between text-xs text-white/50 mt-2">
+            <span>Beachfront</span>
             <span>Inland</span>
           </div>
         </div>
