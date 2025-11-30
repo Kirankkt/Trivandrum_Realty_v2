@@ -173,7 +173,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
                 <label className="block text-sm font-medium text-white/90 mb-2">Property Age</label>
                 <select
                   value={age}
-                  onChange=(e) => setAge(e.target.value)}
+                  onChange={(e) => setAge(e.target.value)}
                   className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 text-white shadow-sm"
                 >
                   <option>Brand New / Under Construction</option>
