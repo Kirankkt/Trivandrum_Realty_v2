@@ -119,60 +119,62 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
             <span>Inland</span>
           </div>
         </div>
-        <div className="border-t border-gray-200 pt-4 mt-4">
-          <label className="block text-xs font-semibold text-white/80 uppercase tracking-wider mb-3">Dimensions & Features</label>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            {/* Land Area - Always Visible */}
+        <div className="border-t border-white/10 pt-5 mt-5">
+          <label className="block text-xs font-semibold text-white/60 uppercase tracking-wider mb-4">Dimensions & Features</label>
+          <div className="grid grid-cols-2 gap-4">
+            {/* Plot Area - Always Visible */}
             <div>
-              <label className="block text-sm font-medium text-white/90 mb-1">
-                Plot Area <span className="text-white/60 font-normal">(cents)</span>
+              <label className="block text-sm font-medium text-white/90 mb-2">
+                Plot Area <span className="text-white/50 text-xs">(cents)</span>
               </label>
               <input
                 type="number"
                 step="0.1"
+                min="0.1"
                 value={plotArea}
                 onChange={(e) => setPlotArea(e.target.value)}
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border bg-gray-50"
+                className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500/50 text-white placeholder-white/30 shadow-sm"
+                placeholder="e.g., 5"
                 required
               />
-              {type === PropertyType.PLOT && Number(plotArea) < 5 && (
-                <p className="text-xs text-amber-600 mt-1">Tip: &gt; 5 cents recommended for Villas.</p>
-              )}
             </div>
             {/* Built Area - Conditional */}
             {type === PropertyType.PROPERTY && (
               <div>
-                <label className="block text-sm font-medium text-white/90 mb-1">
-                  Built-up Area <span className="text-white/60 font-normal">(sq ft)</span>
+                <label className="block text-sm font-medium text-white/90 mb-2">
+                  Built-up <span className="text-white/50 text-xs">(sq ft)</span>
                 </label>
                 <input
                   type="number"
+                  step="0.1"
+                  min="0.1"
                   value={builtArea}
                   onChange={(e) => setBuiltArea(e.target.value)}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border bg-gray-50"
+                  className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500/50 text-white placeholder-white/30 shadow-sm"
+                  placeholder="e.g., 1500"
                   required
                 />
               </div>
             )}
           </div>
           {type === PropertyType.PROPERTY && (
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-2 gap-4 mt-4">
               <div>
-                <label className="block text-sm font-medium text-white/90 mb-1">Bedrooms</label>
+                <label className="block text-sm font-medium text-white/90 mb-2">Bedrooms</label>
                 <select
                   value={bedrooms}
                   onChange={(e) => setBedrooms(Number(e.target.value))}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border bg-gray-50"
+                  className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 text-white shadow-sm"
                 >
                   {[1, 2, 3, 4, 5, 6].map(n => <option key={n} value={n}>{n} BHK</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-white/90 mb-1">Property Age</label>
+                <label className="block text-sm font-medium text-white/90 mb-2">Property Age</label>
                 <select
                   value={age}
-                  onChange={(e) => setAge(e.target.value)}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border bg-gray-50"
+                  onChange=(e) => setAge(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 text-white shadow-sm"
                 >
                   <option>Brand New / Under Construction</option>
                   <option>Resale (&lt; 10 Years)</option>
@@ -181,12 +183,12 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
               </div>
             </div>
           )}
-          <div>
-            <label className="block text-sm font-medium text-white/90 mb-1">Road Access</label>
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-white/90 mb-2">Road Access</label>
             <select
               value={roadWidth}
               onChange={(e) => setRoadWidth(e.target.value)}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border bg-gray-50"
+              className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 text-white shadow-sm"
             >
               <option>Wide / Lorry Access</option>
               <option>Car Access</option>
@@ -197,13 +199,20 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
         <button
           type="submit"
           disabled={isLoading}
-          className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all ${isLoading ? 'opacity-75 cursor-not-allowed' : ''
-            }`}
+          className={`w-full py-3.5 px-6 mt-6 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 text-white font-semibold rounded-lg shadow-lg shadow-teal-500/30 transition-all hover:shadow-xl hover:shadow-teal-500/40 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none`}
         >
-          {isLoading ? 'Analyzing...' : 'Get Precise Estimate'}
+          {isLoading ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Analyzing...
+            </span>
+          ) : 'Get Precise Estimate'}
         </button>
-      </form>
-    </div>
+      </form >
+    </div >
   );
 };
 export default PropertyForm;
