@@ -421,3 +421,19 @@
   letter-spacing: -0.02em;
 }
 
+
+/* Dropdown Select Styling */
+select option {
+  background-color: #1e293b !important;
+  color: white !important;
+  padding: 8px 12px !important;
+}
+
+select option:checked {
+  background: linear-gradient(to right, #0d9488, #14b8a6) !important;
+  color: white !important;
+}
+
+select option:hover {
+  background-color: #334155 !important;
+}
