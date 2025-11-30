@@ -51,23 +51,23 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
     });
   };
   return (
-    <div className="glass-premium rounded-2xl p-8 border-2 border-purple-500/20 shadow-depth card-3d">
+    <div className="glass-dark rounded-2xl p-8 border-2 border-white/10 shadow-depth card-3d">
       <h2 className="text-2xl font-bold text-white mb-2 flex items-center">
-        <svg className="w-6 h-6 mr-3 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+        <svg className="w-6 h-6 mr-3 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
         Property Details
       </h2>
-      <p className="text-sm text-white/60 mb-6">Tell us about your property</p>
+      <p className="text-sm text-white/70 mb-6">Tell us about your property</p>
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Type Selection */}
         <div>
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Asset Type</label>
+          <label className="block text-xs font-semibold text-white/80 uppercase tracking-wider mb-2">Asset Type</label>
           <div className="grid grid-cols-2 gap-4">
             <button
               type="button"
               onClick={() => setType(PropertyType.PROPERTY)}
               className={`py-2 px-4 text-sm font-medium rounded-lg border ${type === PropertyType.PROPERTY
                 ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                : 'bg-white text-white/90 border-gray-300 hover:bg-gray-50'
                 } transition-colors`}
             >
               🏠 House / Villa
@@ -77,7 +77,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
               onClick={() => setType(PropertyType.PLOT)}
               className={`py-2 px-4 text-sm font-medium rounded-lg border ${type === PropertyType.PLOT
                 ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                : 'bg-white text-white/90 border-gray-300 hover:bg-gray-50'
                 } transition-colors`}>
               📍 Plot / Land
             </button>
@@ -85,7 +85,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
         </div>
         {/* Locality */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Locality</label>
+          <label className="block text-sm font-medium text-white/90 mb-1">Locality</label>
           <select
             value={locality}
             onChange={(e) => setLocality(e.target.value)}
@@ -99,7 +99,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
         {/* Distance to Beach */}
         <div>
           <div className="flex justify-between mb-1">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-white/90">
               Distance to Beach
               {isAutoSet && <span className="ml-2 text-xs text-blue-600 font-normal bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">Auto-set for {locality}</span>}
             </label>
@@ -114,18 +114,18 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
             onChange={(e) => handleDistanceChange(parseFloat(e.target.value))}
             className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
           />
-          <div className="flex justify-between text-xs text-gray-400 mt-1">
+          <div className="flex justify-between text-xs text-white/60 mt-1">
             <span>Beachfront (Nearest Coast)</span>
             <span>Inland</span>
           </div>
         </div>
         <div className="border-t border-gray-200 pt-4 mt-4">
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Dimensions & Features</label>
+          <label className="block text-xs font-semibold text-white/80 uppercase tracking-wider mb-3">Dimensions & Features</label>
           <div className="grid grid-cols-2 gap-4 mb-4">
             {/* Land Area - Always Visible */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Plot Area <span className="text-gray-400 font-normal">(cents)</span>
+              <label className="block text-sm font-medium text-white/90 mb-1">
+                Plot Area <span className="text-white/60 font-normal">(cents)</span>
               </label>
               <input
                 type="number"
@@ -142,8 +142,8 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
             {/* Built Area - Conditional */}
             {type === PropertyType.PROPERTY && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Built-up Area <span className="text-gray-400 font-normal">(sq ft)</span>
+                <label className="block text-sm font-medium text-white/90 mb-1">
+                  Built-up Area <span className="text-white/60 font-normal">(sq ft)</span>
                 </label>
                 <input
                   type="number"
@@ -158,7 +158,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
           {type === PropertyType.PROPERTY && (
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Bedrooms</label>
+                <label className="block text-sm font-medium text-white/90 mb-1">Bedrooms</label>
                 <select
                   value={bedrooms}
                   onChange={(e) => setBedrooms(Number(e.target.value))}
@@ -168,7 +168,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Property Age</label>
+                <label className="block text-sm font-medium text-white/90 mb-1">Property Age</label>
                 <select
                   value={age}
                   onChange={(e) => setAge(e.target.value)}
@@ -182,7 +182,7 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
             </div>
           )}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Road Access</label>
+            <label className="block text-sm font-medium text-white/90 mb-1">Road Access</label>
             <select
               value={roadWidth}
               onChange={(e) => setRoadWidth(e.target.value)}
