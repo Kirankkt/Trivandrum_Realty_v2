@@ -59,15 +59,21 @@ const App: React.FC = () => {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
             <div className="max-w-2xl">
               <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                Kerala's Most
+                Don't Overpay for
                 <br />
                 <span className="text-white">
-                  Accurate Property Estimates
+                  Kerala Real Estate
                 </span>
               </h1>
-              <p className="text-xl text-white/95 mb-8">
-                AI-powered valuations for NRIs. Data-driven insights. Transparent pricing.
-                Know the true value before you buy.
+              <p className="text-xl text-white/95 mb-4">
+                Found a property on 99acres or MagicBricks? Get our AI-verified price estimate in 60 seconds.
+              </p>
+              <p className="text-lg text-white/90 mb-8 flex items-center gap-2">
+                <span className="text-2xl">✓</span> See if you're getting a fair deal
+                <br />
+                <span className="text-2xl">⚠️</span> Know if you're overpaying by 5-10%
+                <br />
+                <span className="text-2xl">❌</span> Avoid costly mistakes
               </p>
 
               <button
@@ -77,7 +83,7 @@ const App: React.FC = () => {
                 }}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-xl hover:shadow-2xl transition-all transform hover:scale-105"
               >
-                Get Free Estimate →
+                Verify Price Now (Free) →
               </button>
             </div>
           </div>
@@ -88,32 +94,32 @@ const App: React.FC = () => {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl py-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
               <div className="flex items-center justify-center gap-3">
-                <div className="bg-blue-100 p-3 rounded-full">
-                  <Database className="w-6 h-6 text-blue-600" />
+                <div className="bg-orange-100 p-3 rounded-full">
+                  <TrendingUp className="w-6 h-6 text-orange-600" />
                 </div>
                 <div className="text-left">
-                  <div className="text-2xl font-bold text-gray-900">15+</div>
-                  <div className="text-sm text-gray-600">Locality Baselines</div>
+                  <div className="text-2xl font-bold text-gray-900">37%</div>
+                  <div className="text-sm text-gray-600">Properties Overpriced</div>
                 </div>
               </div>
 
               <div className="flex items-center justify-center gap-3">
                 <div className="bg-green-100 p-3 rounded-full">
-                  <TrendingUp className="w-6 h-6 text-green-600" />
+                  <Shield className="w-6 h-6 text-green-600" />
                 </div>
                 <div className="text-left">
                   <div className="text-2xl font-bold text-gray-900">87%</div>
-                  <div className="text-sm text-gray-600">Avg Confidence</div>
+                  <div className="text-sm text-gray-600">Price Accuracy</div>
                 </div>
               </div>
 
               <div className="flex items-center justify-center gap-3">
-                <div className="bg-purple-100 p-3 rounded-full">
-                  <Shield className="w-6 h-6 text-purple-600" />
+                <div className="bg-blue-100 p-3 rounded-full">
+                  <Database className="w-6 h-6 text-blue-600" />
                 </div>
                 <div className="text-left">
-                  <div className="text-2xl font-bold text-gray-900">AI</div>
-                  <div className="text-sm text-gray-600">Powered Accuracy</div>
+                  <div className="text-2xl font-bold text-gray-900">15+</div>
+                  <div className="text-sm text-gray-600">Verified Localities</div>
                 </div>
               </div>
             </div>

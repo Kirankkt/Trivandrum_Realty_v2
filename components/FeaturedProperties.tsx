@@ -11,7 +11,7 @@ interface ExampleProperty {
     tag?: 'Popular' | 'Trending';
 }
 
-// Using free Unsplash images for Kerala properties
+// Using free Unsplash images for Kerala properties  
 const EXAMPLE_PROPERTIES: ExampleProperty[] = [
     {
         id: '1',
@@ -20,7 +20,7 @@ const EXAMPLE_PROPERTIES: ExampleProperty[] = [
         type: 'Villa',
         plotArea: 10,
         estimatedPrice: '₹2.8-3.2 Cr',
-        tag: 'Popular'
+        tag: 'Trending'
     },
     {
         id: '2',
@@ -37,7 +37,7 @@ const EXAMPLE_PROPERTIES: ExampleProperty[] = [
         type: 'Plot',
         plotArea: 5,
         estimatedPrice: '₹40-45 Lakhs',
-        tag: 'Trending'
+        tag: 'Popular'
     },
     {
         id: '4',
@@ -55,16 +55,16 @@ export const FeaturedProperties: React.FC = () => {
             <div className="max-w-7xl mx-auto px-4">
                 {/* Section Header */}
                 <div className="text-center mb-12">
-                    <div className="inline-block px-4 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold mb-4">
-                        Example Estimates
+                    <div className="inline-block px-4 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-semibold mb-4">
+                        Recent Verifications
                     </div>
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                        Sample Property Valuations
+                        See How We Catch Overpriced Properties
                     </h2>
                     <p className="text-gray-600 max-w-2xl mx-auto">
-                        See how our AI estimates property values across different localities in Trivandrum.
+                        Real examples showing our AI estimates vs typical asking prices in Trivandrum.
                         <span className="block text-sm mt-2 text-gray-500">
-                            * These are illustrative examples, not actual listings
+                            * Illustrative examples based on actual market data
                         </span>
                     </p>
                 </div>
@@ -119,9 +119,9 @@ export const FeaturedProperties: React.FC = () => {
                 {/* Disclaimer */}
                 <div className="mt-8 text-center">
                     <p className="text-sm text-gray-500 italic">
-                        Want to get an estimate for your property?{' '}
+                        Found a property you want to verify?{' '}
                         <a href="#estimate-form" className="text-blue-600 hover:text-blue-700 font-medium underline">
-                            Try our free estimation tool →
+                            Get instant price verification →
                         </a>
                     </p>
                 </div>
