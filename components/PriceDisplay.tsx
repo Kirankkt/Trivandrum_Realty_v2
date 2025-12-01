@@ -106,18 +106,25 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ result, input }) => {
       </div>
 
       {/* Contact Agent Button */}
-      <div className="mb-6">
+      <div className="mt-8 flex justify-center">
         <button
-          onClick={() => setShowLeadModal(true)}
-          className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-3 group"
+          onClick={() => {
+            if (!user) {
+              alert("Please sign in to contact verified agents!");
+              return;
+            }
+            setShowLeadModal(true);
+          }}
+          className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
         >
-          <svg className="w-6 h-6 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 0 00-2-2H5a2 0 00-2 2v10a2 0 002 2z"></path>
           </svg>
           <span className="text-lg">Contact Verified Agent</span>
+          {!user && <span className="text-sm opacity-75">(Sign in required)</span>}
         </button>
-        <p className="text-xs text-gray-500 text-center mt-2">Get expert guidance for buying or selling in {input?.locality}</p>
-      </div>
+      </div>  <p className="text-xs text-gray-500 text-center mt-2">Get expert guidance for buying or selling in {input?.locality}</p>
+
 
       {/* Confidence Badge */}
       {result.confidence && (
