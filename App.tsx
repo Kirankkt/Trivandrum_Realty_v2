@@ -68,13 +68,17 @@ const App: React.FC = () => {
               <p className="text-xl text-white/95 mb-4">
                 Found a property on 99acres or MagicBricks? Get our AI-verified price estimate in 60 seconds.
               </p>
-              <p className="text-lg text-white/90 mb-8 flex items-center gap-2">
-                <span className="text-2xl">✓</span> See if you're getting a fair deal
-                <br />
-                <span className="text-2xl">⚠️</span> Know if you're overpaying by 5-10%
-                <br />
-                <span className="text-2xl">❌</span> Avoid costly mistakes
-              </p>
+              <ul className="text-lg text-white/90 mb-8 space-y-2">
+                <li className="flex items-center gap-2">
+                  <span>✓</span> See if you're getting a fair deal
+                </li>
+                <li className="flex items-center gap-2">
+                  <span>⚠️</span> Know if you're overpaying by 5-10%
+                </li>
+                <li className="flex items-center gap-2">
+                  <span>❌</span> Avoid costly mistakes
+                </li>
+              </ul>
 
               <button
                 onClick={() => {
