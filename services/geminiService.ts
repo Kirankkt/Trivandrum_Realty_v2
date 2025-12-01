@@ -45,36 +45,6 @@ const fetchRealSources = async (locality: string): Promise<Source[]> => {
     });
     return sources.slice(0, 10);
   } catch (error) {
-    console.error('Error fetching sources from Serper:', error);
-    return [];
-  }
-};
-// Helper: Get cache duration based on baseline confidence
-const getCacheDuration = (baseline: any): number => {
-  if (!baseline) return 12 * 60 * 60 * 1000; // 12 hours default
-
-  const { sample_size, variance, confidence_score } = baseline;
-
-  // High confidence: 7 days (15+ searches, low variance, high confidence)
-  if (sample_size >= 15 && variance <= 10 && confidence_score >= 85) {
-    console.log(`🎯 HIGH confidence for locality - 7-day cache (${sample_size} searches, ${confidence_score}% confidence)`);
-    return 7 * 24 * 60 * 60 * 1000;
-  }
-
-  // Medium confidence: 2 days (5-14 searches)
-  if (sample_size >= 5 && sample_size < 15) {
-    console.log(`📊 MEDIUM confidence for locality - 2-day cache (${sample_size} searches)`);
-    return 2 * 24 * 60 * 60 * 1000;
-  }
-
-  // Low confidence: 12 hours (<5 searches)
-  console.log(`⚠️ LOW confidence for locality - 12-hour cache (${sample_size} searches)`);
-  return 12 * 60 * 60 * 1000;
-};
-
-// Helper: Check cache with tiered durations
-const checkCache = async (locality: string): Promise<number | null> => {
-  try {
     // Get baseline to determine cache duration
     const baseline = await getBaseline(locality);
     const cacheDuration = getCacheDuration(baseline);
