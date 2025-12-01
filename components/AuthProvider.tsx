@@ -33,11 +33,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null);
             setLoading(false);
-        };
+        });
 
-        return (
-            <AuthContext.Provider value={{ user, loading, signIn, signOut }}>
-                {children}
-            </AuthContext.Provider>
-        );
+        return () => subscription.unsubscribe();
+    }, []);
+
+    const signIn = async () => {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: window.location.origin
+            }
+        });
+        if (error) {
+            alert('Error signing in: ' + error.message);
+        }
     };
+
+    const signOut = async () => {
+        const { error } = await supabase.auth.signOut();
+        if (error) console.error('Error signing out:', error);
+    };
+
+    return (
+        <AuthContext.Provider value={{ user, loading, signIn, signOut }}>
+            {children}
+        </AuthContext.Provider>
+    );
+};
