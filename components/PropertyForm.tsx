@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { UserInput, PropertyType } from '../types';
 import { LOCALITIES, LOCALITY_META } from '../constants';
+import { LocationAutocomplete } from './LocationAutocomplete';
 interface PropertyFormProps {
   onSubmit: (data: UserInput) => void;
   isLoading: boolean;
@@ -85,16 +86,12 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ onSubmit, isLoading }) => {
         </div>
         {/* Locality */}
         <div>
-          <label className="block text-sm font-medium text-white/90 mb-1">Locality</label>
-          <select
+          <label className="block text-sm font-medium text-white/90 mb-2">Locality</label>
+          <LocationAutocomplete
             value={locality}
-            onChange={(e) => setLocality(e.target.value)}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 bg-gray-50 border"
-          >
-            {LOCALITIES.map((loc) => (
-              <option key={loc} value={loc}>{loc}</option>
-            ))}
-          </select>
+            onChange={setLocality}
+            placeholder="Search localities in Trivandrum..."
+          />
         </div>
         {/* Distance to Beach */}
         <div>
