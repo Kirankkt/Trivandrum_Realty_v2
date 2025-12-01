@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AuthProvider } from './components/AuthProvider';
+import { AuthProvider, useAuth } from './components/AuthProvider';
 import Header from './components/Header';
 import PropertyForm from './components/PropertyForm';
 import PriceDisplay from './components/PriceDisplay';
