@@ -48,12 +48,12 @@ const App: React.FC = () => {
         <section
           className="relative h-[500px] bg-cover bg-center flex items-center"
           style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80)',
-            backgroundPosition: 'center 40%'
+            backgroundImage: 'url(https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1920&q=80)',
+            backgroundPosition: 'center center'
           }}
         >
-          {/* Dark Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/75 to-gray-900/60"></div>
+          {/* Lighter Overlay for Natural Look */}
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-900/70 via-gray-900/50 to-transparent"></div>
 
           {/* Hero Content */}
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
@@ -61,11 +61,11 @@ const App: React.FC = () => {
               <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
                 Kerala's Most
                 <br />
-                <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                <span className="text-white">
                   Accurate Property Estimates
                 </span>
               </h1>
-              <p className="text-xl text-white/90 mb-8">
+              <p className="text-xl text-white/95 mb-8">
                 AI-powered valuations for NRIs. Data-driven insights. Transparent pricing.
                 Know the true value before you buy.
               </p>
@@ -75,7 +75,7 @@ const App: React.FC = () => {
                   setShowForm(true);
                   document.getElementById('estimate-form')?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-xl hover:shadow-2xl transition-all transform hover:scale-105"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-xl hover:shadow-2xl transition-all transform hover:scale-105"
               >
                 Get Free Estimate →
               </button>

@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { APP_TITLE, APP_DESC } from '../constants';
-import { supabase } from '../services/supabaseClient';
-import { User } from '@supabase/supabase-js';
+import React from 'react';
+import { useAuth } from './AuthProvider';
+
 const Header: React.FC = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [showLogin, setShowLogin] = useState(false);
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   useEffect(() => {
