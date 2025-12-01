@@ -61,22 +61,17 @@ const App: React.FC = () => {
               <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
                 Don't Overpay for
                 <br />
-                <span className="text-white">
-                  Kerala Real Estate
-                </span>
+                Kerala Real Estate
               </h1>
-              <p className="text-xl text-white/95 mb-4">
-                Found a property on 99acres or MagicBricks? Get our AI-verified price estimate in 60 seconds.
+              <p className="text-xl text-white/95 mb-6">
+                Get AI-verified price estimates in 60 seconds.
               </p>
               <ul className="text-lg text-white/90 mb-8 space-y-2">
                 <li className="flex items-center gap-2">
-                  <span>✓</span> See if you're getting a fair deal
+                  <span>✓</span> Know if you're getting a fair deal
                 </li>
                 <li className="flex items-center gap-2">
-                  <span>⚠️</span> Know if you're overpaying by 5-10%
-                </li>
-                <li className="flex items-center gap-2">
-                  <span>❌</span> Avoid costly mistakes
+                  <span>⚠️</span> Avoid overpaying by 5-10%
                 </li>
               </ul>
 
@@ -87,7 +82,7 @@ const App: React.FC = () => {
                 }}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-xl hover:shadow-2xl transition-all transform hover:scale-105"
               >
-                Verify Price Now (Free) →
+                Verify Price Free →
               </button>
             </div>
           </div>
