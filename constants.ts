@@ -163,8 +163,8 @@ export const BENCHMARK_RATES = {
   SUBURB: 6.0     // e.g., Pothencode/Vattiyoorkavu avg
 };
 
-export const APP_TITLE = "Trivandrum Realty";
-export const APP_DESC = "Developer-focused estimator for Plots & Villas in Trivandrum, featuring NRI investment suitability scores and airport connectivity analysis.";
+export const APP_TITLE = "FairRate Kerala";
+export const APP_DESC = "Verify property prices in Kerala. AI-powered price verification to help you avoid overpaying on real estate.";
 
 // ========================================
 // GPS COORDINATES - Professional Data

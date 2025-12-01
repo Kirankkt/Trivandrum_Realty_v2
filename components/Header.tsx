@@ -24,8 +24,8 @@ const Header: React.FC = () => {
           {/* Center: Logo */}
           <div className="flex-1 md:flex-none flex justify-center md:absolute md:left-1/2 md:transform md:-translate-x-1/2">
             <a href="/" className="flex items-center">
-              <span className="text-2xl font-bold text-blue-600">Trivandrum</span>
-              <span className="text-2xl font-light text-gray-700 ml-1">Realty</span>
+              <span className="text-2xl font-bold text-blue-600">FairRate</span>
+              <span className="text-2xl font-light text-gray-700 ml-1">Kerala</span>
             </a>
           </div>
 
