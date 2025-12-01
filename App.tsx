@@ -15,6 +15,7 @@ import { predictPrice } from './services/geminiService';
 import { TrendingUp, Shield, Database } from 'lucide-react';
 
 const App: React.FC = () => {
+  const { user, signIn } = useAuth();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PredictionResult | null>(null);
   const [currentInput, setCurrentInput] = useState<UserInput | null>(null);
@@ -202,11 +203,14 @@ const App: React.FC = () => {
                         user ? (
                           <NriView result={result} />
                         ) : (
-                          <AuthRequiredPlaceholder
-                            title="Sign In Required"
-                            description="NRI insights are available for signed-in users."
-                            onSignIn={signIn}
-                          />
+                          <div className="glass-dark rounded-2xl p-12 text-center">
+                            <div className="text-6xl mb-4">🔒</div>
+                            <h3 className="text-2xl font-bold text-white mb-3">Sign In Required</h3>
+                            <p className="text-white/70 mb-6">NRI insights are available for signed-in users.</p>
+                            <button onClick={signIn} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold">
+                              Sign In to View
+                            </button>
+                          </div>
                         )
                       )}
 
@@ -218,11 +222,14 @@ const App: React.FC = () => {
                             locality={currentInput?.locality || ''}
                           />
                         ) : (
-                          <AuthRequiredPlaceholder
-                            title="Sign In Required"
-                            description="Interactive geospatial map is available for signed-in users."
-                            onSignIn={signIn}
-                          />
+                          <div className="glass-dark rounded-2xl p-12 text-center">
+                            <div className="text-6xl mb-4">🔒</div>
+                            <h3 className="text-2xl font-bold text-white mb-3">Sign In Required</h3>
+                            <p className="text-white/70 mb-6">Interactive geospatial map is available for signed-in users.</p>
+                            <button onClick={signIn} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold">
+                              Sign In to View
+                            </button>
+                          </div>
                         )
                       )}
 
@@ -231,11 +238,14 @@ const App: React.FC = () => {
                         user ? (
                           <TopLocations />
                         ) : (
-                          <AuthRequiredPlaceholder
-                            title="Sign In Required"
-                            description="Market trends analysis is available for signed-in users."
-                            onSignIn={signIn}
-                          />
+                          <div className="glass-dark rounded-2xl p-12 text-center">
+                            <div className="text-6xl mb-4">🔒</div>
+                            <h3 className="text-2xl font-bold text-white mb-3">Sign In Required</h3>
+                            <p className="text-white/70 mb-6">Market trends analysis is available for signed-in users.</p>
+                            <button onClick={signIn} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold">
+                              Sign In to View
+                            </button>
+                          </div>
                         )
                       )}
 
@@ -244,11 +254,14 @@ const App: React.FC = () => {
                         user ? (
                           <HistoricalModels result={result} />
                         ) : (
-                          <AuthRequiredPlaceholder
-                            title="Sign In Required"
-                            description="Advanced analytics are available for signed-in users."
-                            onSignIn={signIn}
-                          />
+                          <div className="glass-dark rounded-2xl p-12 text-center">
+                            <div className="text-6xl mb-4">🔒</div>
+                            <h3 className="text-2xl font-bold text-white mb-3">Sign In Required</h3>
+                            <p className="text-white/70 mb-6">Advanced analytics are available for signed-in users.</p>
+                            <button onClick={signIn} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold">
+                              Sign In to View
+                            </button>
+                          </div>
                         )
                       )}
 
