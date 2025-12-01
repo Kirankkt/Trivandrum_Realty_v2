@@ -135,7 +135,7 @@ const AppContent: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Left Column: Form (Always Visible) */}
             <div className="lg:col-span-4 space-y-6 animate-slide-left">
-              <PropertyForm onSubmit={handlePrediction} isLoading={loading} />
+              <PropertyForm onSubmit={handleGenerate} isLoading={loading} />
             </div>
             {/* Right Column: Results & Tabs */}
             <div className="lg:col-span-8 space-y-6 animate-slide-right">
