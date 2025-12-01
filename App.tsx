@@ -196,21 +196,62 @@ const App: React.FC = () => {
                       {activeTab === 'valuation' && (
                         <PriceDisplay result={result} input={currentInput} />
                       )}
+
+                      {/* NRI Insights - Auth Required */}
                       {activeTab === 'nri' && (
-                        <NriView result={result} />
+                        user ? (
+                          <NriView result={result} />
+                        ) : (
+                          <AuthRequiredPlaceholder
+                            title="Sign In Required"
+                            description="NRI insights are available for signed-in users."
+                            onSignIn={signIn}
+                          />
+                        )
                       )}
-                      {activeTab === 'trends' && (
-                        <TopLocations />
-                      )}
+
+                      {/* Geospatial - Auth Required */}
                       {activeTab === 'geospatial' && (
-                        <GeospatialView
-                          result={result}
-                          locality={currentInput?.locality || ''}
-                        />
+                        user ? (
+                          <GeospatialView
+                            result={result}
+                            locality={currentInput?.locality || ''}
+                          />
+                        ) : (
+                          <AuthRequiredPlaceholder
+                            title="Sign In Required"
+                            description="Interactive geospatial map is available for signed-in users."
+                            onSignIn={signIn}
+                          />
+                        )
                       )}
+
+                      {/* Market Trends - Auth Required */}
+                      {activeTab === 'trends' && (
+                        user ? (
+                          <TopLocations />
+                        ) : (
+                          <AuthRequiredPlaceholder
+                            title="Sign In Required"
+                            description="Market trends analysis is available for signed-in users."
+                            onSignIn={signIn}
+                          />
+                        )
+                      )}
+
+                      {/* Historical Models - Auth Required */}
                       {activeTab === 'historical' && (
-                        <HistoricalModels result={result} />
+                        user ? (
+                          <HistoricalModels result={result} />
+                        ) : (
+                          <AuthRequiredPlaceholder
+                            title="Sign In Required"
+                            description="Advanced analytics are available for signed-in users."
+                            onSignIn={signIn}
+                          />
+                        )
                       )}
+
                       {activeTab === 'mysaved' && (
                         <MySavedListings />
                       )}
