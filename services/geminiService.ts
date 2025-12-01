@@ -53,7 +53,28 @@ const fetchRealSources = async (locality: string): Promise<Source[]> => {
 const getCacheDuration = (baseline: any): number => {
   if (!baseline) return 24 * 60 * 60 * 1000; // 24 hours default
 
-  const { sample_size, variance, confidence_score } = baseline;
+  // Extract from baseline VIEW (std_deviation exists, variance/confidence_score don't)
+  const { sample_size, std_deviation, median_rate } = baseline;
+
+  // Calculate variance from std_deviation (same pattern as line 360)
+  const variance = median_rate ? (std_deviation / median_rate) * 100 : 50;
+
+  // Calculate confidence score (same logic as calculateConfidence function)
+  let confidence_score = 50; // Base score
+  if (sample_size >= 15) confidence_score += 30;
+  else if (sample_size >= 5) confidence_score += 20;
+  else if (sample_size >= 3) confidence_score += 10;
+  else confidence_score += 5;
+
+  if (sample_size >= 3) {
+    if (variance <= 10) confidence_score += 20;
+    else if (variance <= 20) confidence_score += 10;
+    else confidence_score -= 10;
+  }
+
+  if (sample_size < 5) {
+    confidence_score = Math.min(confidence_score, 55);
+  }
 
   // High confidence: 7 days (15+ searches, low variance, high confidence)
   if (sample_size >= 15 && variance <= 10 && confidence_score >= 85) {
